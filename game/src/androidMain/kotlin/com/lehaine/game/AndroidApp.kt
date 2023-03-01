@@ -1,4 +1,4 @@
-package com.game.template
+package com.lehaine.game
 
 import android.app.Application
 

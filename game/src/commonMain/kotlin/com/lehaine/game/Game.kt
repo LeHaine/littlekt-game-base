@@ -1,4 +1,4 @@
-package com.game.template
+package com.lehaine.game
 
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.ContextListener
