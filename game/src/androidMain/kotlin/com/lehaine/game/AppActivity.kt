@@ -14,6 +14,6 @@ class AppActivity : LittleKtActivity() {
     }
 
     override fun createContextListener(context: Context): ContextListener {
-        return Game(context)
+        return GameCore(context)
     }
 }

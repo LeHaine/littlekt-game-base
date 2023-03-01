@@ -1,8 +1,10 @@
 buildscript {
     repositories {
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
         gradlePluginPortal()
         google()
         mavenCentral()
+        mavenLocal()
     }
     dependencies {
         classpath(libs.bundles.plugins)
@@ -11,12 +13,11 @@ buildscript {
 
 allprojects {
     repositories {
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
         google()
         mavenCentral()
+        mavenLocal()
     }
-
-    group = "com.game.template"
-    version = "1.0"
 }
 
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {

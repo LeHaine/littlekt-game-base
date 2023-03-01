@@ -1,0 +1,3 @@
+[submodule "littlekt-extras"]
+	path = littlekt-extras
+	url = https://github.com/LeHaine/littlekt-extras

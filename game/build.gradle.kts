@@ -10,6 +10,9 @@ plugins {
     id("com.android.application")
 }
 
+group = "com.lehaine.game"
+version = "1.0"
+
 kotlin {
     android()
     jvm {
@@ -80,6 +83,7 @@ kotlin {
             dependencies {
                 implementation(libs.littlekt.core)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(project(":littlekt-extras:core"))
             }
         }
         val commonTest by getting {
