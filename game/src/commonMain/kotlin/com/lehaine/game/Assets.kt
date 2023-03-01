@@ -12,10 +12,10 @@ import kotlin.contracts.contract
 import kotlin.jvm.Volatile
 
 class Assets private constructor(context: Context) : Disposable {
-    private val assets = AssetProvider(context)
-    private val atlas: TextureAtlas by assets.load(context.resourcesVfs["tiles.atlas.json"])
-    private val pixelFont: BitmapFont by assets.prepare {
-        assets.loadSuspending<BitmapFont>(
+    private val provider = AssetProvider(context)
+    private val atlas: TextureAtlas by provider.load(context.resourcesVfs["tiles.atlas.json"])
+    private val pixelFont: BitmapFont by provider.prepare {
+        provider.loadSuspending<BitmapFont>(
             context.resourcesVfs["m5x7_16_outline.fnt"],
             BitmapFontAssetParameter(preloadedTextures = listOf(atlas["m5x7_16_outline_0"].slice))
         ).content
@@ -33,6 +33,7 @@ class Assets private constructor(context: Context) : Disposable {
 
         val atlas: TextureAtlas get() = INSTANCE.atlas
         val pixelFont: BitmapFont get() = INSTANCE.pixelFont
+        val provider: AssetProvider get() = INSTANCE.provider
 
         @OptIn(ExperimentalContracts::class)
         fun createInstance(context: Context, onLoad: () -> Unit): Assets {
@@ -40,8 +41,8 @@ class Assets private constructor(context: Context) : Disposable {
             check(instance == null) { "Instance already created!" }
             val newInstance = Assets(context)
             instance = newInstance
-            INSTANCE.assets.onFullyLoaded = onLoad
-            context.onRender { INSTANCE.assets.update() }
+            INSTANCE.provider.onFullyLoaded = onLoad
+            context.onRender { INSTANCE.provider.update() }
             return newInstance
         }
 

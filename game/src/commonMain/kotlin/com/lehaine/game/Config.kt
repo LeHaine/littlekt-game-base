@@ -5,6 +5,8 @@ package com.lehaine.game
  * @date 3/1/2023
  */
 object Config {
+    const val PPU = 1f
+
     const val VIRTUAL_WIDTH = 480
     const val VIRTUAL_HEIGHT = 270
 

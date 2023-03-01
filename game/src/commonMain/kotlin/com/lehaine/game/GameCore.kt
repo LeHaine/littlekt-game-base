@@ -18,16 +18,20 @@ class GameCore(context: Context) : FixedGame<FixedScene>(context) {
     override suspend fun Context.start() {
         val batch = SpriteBatch(this)
         val shapeRenderer: ShapeRenderer
+        var initialized = false
 
         addScene(LoadingScene(this, batch))
         setScene<LoadingScene>()
 
         Assets.createInstance(this) {
-            shapeRenderer = ShapeRenderer(batch, Assets.atlas.getByPrefix("fxPixel").slice)
-            KtScope.launch {
-                addScene(GameScene(context, batch, shapeRenderer))
-                setScene<GameScene>()
-                removeScene<LoadingScene>()?.dispose()
+            if (!initialized) {
+                initialized = true
+                shapeRenderer = ShapeRenderer(batch, Assets.atlas.getByPrefix("fxPixel").slice)
+                KtScope.launch {
+                    addScene(GameScene(context, batch, shapeRenderer))
+                    setScene<GameScene>()
+                    removeScene<LoadingScene>()?.dispose()
+                }
             }
         }
         onRender {

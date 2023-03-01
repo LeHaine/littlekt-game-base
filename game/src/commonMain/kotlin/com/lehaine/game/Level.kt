@@ -1,22 +1,23 @@
 package com.lehaine.game
 
+import com.lehaine.littlekt.extras.GameLevel
 import com.lehaine.littlekt.graphics.g2d.tilemap.ldtk.LDtkIntGridLayer
 import com.lehaine.littlekt.graphics.g2d.tilemap.ldtk.LDtkLevel
 import com.lehaine.littlekt.math.clamp
 
-class Level(ldtkLevel: LDtkLevel) {
-    private val marks = mutableMapOf<LevelMark, MutableMap<Int, Int>>()
+class Level(ldtkLevel: LDtkLevel) : GameLevel<Level.LevelMark> {
+    override var gridSize: Int = Config.GRID_CELL_SIZE
 
+    private val marks = mutableMapOf<LevelMark, MutableMap<Int, Int>>()
 
     // a list of collision int values from LDtk world
     private val collisionValues = intArrayOf(1)
     private val collisionLayer = ldtkLevel["Collisions"] as LDtkIntGridLayer
 
+    override fun isValid(cx: Int, cy: Int) = collisionLayer.isCoordValid(cx, cy)
+    override fun getCoordId(cx: Int, cy: Int) = collisionLayer.getCoordId(cx, cy)
 
-    fun isValid(cx: Int, cy: Int) = collisionLayer.isCoordValid(cx, cy)
-    fun getCoordId(cx: Int, cy: Int) = collisionLayer.getCoordId(cx, cy)
-
-    fun hasCollision(cx: Int, cy: Int): Boolean {
+    override fun hasCollision(cx: Int, cy: Int): Boolean {
         return if (isValid(cx, cy)) {
             collisionValues.contains(collisionLayer.getInt(cx, cy))
         } else {
@@ -24,17 +25,17 @@ class Level(ldtkLevel: LDtkLevel) {
         }
     }
 
-    fun hasMark(cx: Int, cy: Int, mark: LevelMark, dir: Int): Boolean {
+    override fun hasMark(cx: Int, cy: Int, mark: LevelMark, dir: Int): Boolean {
         return marks[mark]?.get(getCoordId(cx, cy)) == dir && isValid(cx, cy)
     }
 
-    fun setMarks(cx: Int, cy: Int, marks: List<LevelMark>) {
+    override fun setMarks(cx: Int, cy: Int, marks: List<LevelMark>) {
         marks.forEach {
             setMark(cx, cy, it, 0)
         }
     }
 
-    fun setMark(cx: Int, cy: Int, mark: LevelMark, dir: Int) {
+    override fun setMark(cx: Int, cy: Int, mark: LevelMark, dir: Int) {
         if (isValid(cx, cy) && !hasMark(cx, cy, mark, dir)) {
             if (!marks.contains(mark)) {
                 marks[mark] = mutableMapOf()
