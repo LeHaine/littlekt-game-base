@@ -154,16 +154,22 @@ class EntityCamera : PixelSmoothCamera() {
         bumpY *= bumpFrict.pow(tmod)
 
         if (clampToBounds) {
-            clampedFocus.x = if (trueViewBounds.width < width - offset.x) {
+            clampedFocus.x = if (trueViewBounds.width < width - offset.x * combinedZoom) {
                 trueViewBounds.width * 0.5f
             } else {
-                rawFocus.x.clamp(width * 0.5f - offset.x, trueViewBounds.width - width * 0.5f + offset.x)
+                rawFocus.x.clamp(
+                    width * 0.5f - offset.x * combinedZoom,
+                    trueViewBounds.width - width * 0.5f + offset.x * combinedZoom
+                )
             }
 
-            clampedFocus.y = if (trueViewBounds.height < height - offset.y) {
+            clampedFocus.y = if (trueViewBounds.height < height - offset.y * combinedZoom) {
                 trueViewBounds.height * 0.5f
             } else {
-                rawFocus.y.clamp(height * 0.5f - offset.y, trueViewBounds.height - height * 0.5f + offset.y)
+                rawFocus.y.clamp(
+                    height * 0.5f - offset.y * combinedZoom,
+                    trueViewBounds.height - height * 0.5f + offset.y * combinedZoom
+                )
             }
         } else {
             clampedFocus.x = rawFocus.x
