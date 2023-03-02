@@ -1,15 +1,13 @@
 package com.lehaine.game
 
-import com.lehaine.game.scene.GameScene
 import com.lehaine.game.scene.LoadingScene
+import com.lehaine.game.scene.MainMenuScene
 import com.lehaine.littlekt.Context
-import com.lehaine.littlekt.async.KtScope
 import com.lehaine.littlekt.extras.FixedGame
 import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.graphics.g2d.SpriteBatch
 import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
 import com.lehaine.littlekt.input.Key
-import kotlinx.coroutines.launch
 
 
 class GameCore(context: Context) : FixedGame<FixedScene>(context) {
@@ -27,14 +25,15 @@ class GameCore(context: Context) : FixedGame<FixedScene>(context) {
             if (!initialized) {
                 initialized = true
                 shapeRenderer = ShapeRenderer(batch, Assets.atlas.getByPrefix("fxPixel").slice)
-                KtScope.launch {
-                    addScene(GameScene(context, batch, shapeRenderer))
-                    setScene<GameScene>()
-                    removeScene<LoadingScene>()?.dispose()
-                }
+                addScene(MainMenuScene(context, batch, shapeRenderer, this@GameCore))
+                setScene<MainMenuScene>()
+                removeScene<LoadingScene>()?.dispose()
             }
         }
         onRender {
+            if (input.isKeyPressed(Key.SHIFT_LEFT) && input.isKeyJustPressed(Key.M)) {
+                setScene<MainMenuScene>()
+            }
             if (input.isKeyJustPressed(Key.ESCAPE)) {
                 close()
             }

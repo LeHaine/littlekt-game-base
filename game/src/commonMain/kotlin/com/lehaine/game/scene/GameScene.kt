@@ -77,7 +77,6 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     init {
         Assets.provider.prepare {
             debugger.toGridPosition(15, 15)
-            sceneCamera.targetZoom= 2f
             sceneCamera.follow(debugger, true)
             sceneCamera.viewBounds.width = world.levels[0].pxWidth.toFloat()
             sceneCamera.viewBounds.height = world.levels[0].pxHeight.toFloat()
