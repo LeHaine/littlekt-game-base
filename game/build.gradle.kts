@@ -1,3 +1,6 @@
+import com.lehaine.littlekt.gradle.texturepacker.littleKt
+import com.lehaine.littlekt.gradle.texturepacker.packing
+import com.lehaine.littlekt.gradle.texturepacker.texturePacker
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
@@ -8,6 +11,18 @@ repositories {
 plugins {
     kotlin("multiplatform")
     id("com.android.application")
+    id("com.lehaine.littlekt.gradle.texturepacker")
+}
+
+littleKt {
+    texturePacker {
+        inputDir = "../art/export_tiles/"
+        outputDir = "src/commonMain/resources/"
+        outputName = "tiles.atlas"
+        packing {
+            extrude = 2
+        }
+    }
 }
 
 group = "com.lehaine.game"
