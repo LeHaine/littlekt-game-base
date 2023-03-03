@@ -52,7 +52,13 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
     private val ui: Control
     private val graph =
-        sceneGraph(context, ExtendViewport(960, 540), batch, uiInputSignals = createUiGameInputSignals()) {
+        sceneGraph(
+            context,
+            ExtendViewport(960, 540),
+            batch,
+            uiInputSignals = createUiGameInputSignals(),
+            whitePixel = Assets.atlas.getByPrefix("fxPixel").slice
+        ) {
             ui = control {
                 name = "UI"
                 anchorRight = 1f

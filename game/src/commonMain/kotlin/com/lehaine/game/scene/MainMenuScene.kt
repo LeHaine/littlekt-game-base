@@ -2,6 +2,7 @@ package com.lehaine.game.scene
 
 import com.lehaine.game.Assets
 import com.lehaine.game.GameCore
+import com.lehaine.game.createUiGameInputSignals
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.graph.node.resource.HAlign
@@ -26,50 +27,54 @@ class MainMenuScene(context: Context, val batch: Batch, val shapeRenderer: Shape
     private var launching = false
     private var initialized = false
 
-    private val graph = sceneGraph(context, ExtendViewport(960, 480), batch) {
-        centerContainer {
-            anchorRight = 1f
-            anchorBottom = 1f
-            column {
-                separation = 10
+    private val graph =
+        sceneGraph(
+            context, ExtendViewport(960, 480), batch,
+            whitePixel = Assets.atlas.getByPrefix("fxPixel").slice
+        ) {
+            centerContainer {
+                anchorRight = 1f
+                anchorBottom = 1f
+                column {
+                    separation = 10
 
-                label {
-                    text = "Main Menu"
-                    font = Assets.pixelFont
-                    horizontalAlign = HAlign.CENTER
-                    fontScaleX = 2f
-                    fontScaleY = 2f
-                }
+                    label {
+                        text = "Main Menu"
+                        font = Assets.pixelFont
+                        horizontalAlign = HAlign.CENTER
+                        fontScaleX = 2f
+                        fontScaleY = 2f
+                    }
 
-                button {
-                    text = "Start"
+                    button {
+                        text = "Start"
 
-                    onPressed += {
-                        if (!launching) {
-                            launching = true
-                            if(!core.containsScene<GameScene>()) {
-                                core.addScene(GameScene(context, batch, shapeRenderer))
+                        onPressed += {
+                            if (!launching) {
+                                launching = true
+                                if (!core.containsScene<GameScene>()) {
+                                    core.addScene(GameScene(context, batch, shapeRenderer))
+                                }
+                                core.setScene<GameScene>()
                             }
-                            core.setScene<GameScene>()
                         }
                     }
-                }
-                button {
-                    text = "Settings"
-                    // TODO go to settings
-                }
-
-                if (context.platform == Context.Platform.DESKTOP) {
                     button {
-                        text = "Exit"
-                        onPressed += {
-                            context.close()
+                        text = "Settings"
+                        // TODO go to settings
+                    }
+
+                    if (context.platform == Context.Platform.DESKTOP) {
+                        button {
+                            text = "Exit"
+                            onPressed += {
+                                context.close()
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
     override suspend fun Context.show() {
         if (!initialized) {
