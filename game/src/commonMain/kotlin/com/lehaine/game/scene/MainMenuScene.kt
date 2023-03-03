@@ -2,7 +2,6 @@ package com.lehaine.game.scene
 
 import com.lehaine.game.Assets
 import com.lehaine.game.GameCore
-import com.lehaine.game.createUiGameInputSignals
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.graph.node.resource.HAlign
