@@ -1,7 +1,7 @@
 #!/bin/bash
 aseprite="D:/Program Files (x86)/SteamLibrary/steamapps/common/Aseprite/Aseprite.exe"
 fileName=""
-excludeFiles=("expBar.aseprite" "healthBar.aseprite" "dragonArrow.aseprite")
+excludeFiles=()
 
 if [ -z "$1" ]; then
   for file in ./ase/*.aseprite; do
@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
     prefix="${fileName:0:2}"
     if [ "${prefix}" != m_ ]; then
       if [[ ! "${excludeFiles[*]}" =~ ${fileName} ]]; then
-        "$aseprite" -b "$file" --save-as ./export_tiles/"${fileName}""{tag}"0.png
+        "$aseprite" -b "$file" --save-as ./export_tiles/"${fileName}""{tag}{frame0}".png
       fi
     fi
   done
@@ -22,7 +22,7 @@ if [ -z "$1" ]; then
     echo "Exporting ${file}"
     if [ "${prefix}" != m_ ]; then
       if [[ ! "${excludeFiles[*]}" =~ ${fileName} ]]; then
-        "$aseprite" -b "$file" --save-as ./export_tiles/"${fileName}""{tag}"0.png
+        "$aseprite" -b "$file" --save-as ./export_tiles/"${fileName}""{tag}{frame0}".png
       fi
     fi
 fi
