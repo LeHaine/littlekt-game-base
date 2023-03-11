@@ -3,7 +3,7 @@ package com.lehaine.game.entity
 import com.lehaine.game.Assets
 import com.lehaine.game.Config
 import com.lehaine.littlekt.Context
-import com.lehaine.littlekt.extras.entity.Entity
+import com.lehaine.littlekt.extras.grid.entity.GridEntity
 import com.lehaine.littlekt.graphics.Color
 import com.lehaine.littlekt.input.Key
 import kotlin.time.Duration
@@ -12,7 +12,7 @@ import kotlin.time.Duration
  * @author Colton Daily
  * @date 3/1/2023
  */
-class DebugEntity(val context: Context) : Entity(Config.GRID_CELL_SIZE_F) {
+class DebugEntity(val context: Context) : GridEntity(Config.GRID_CELL_SIZE_F) {
 
     private var xDir = 0
     private var yDir = 0

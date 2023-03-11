@@ -4,8 +4,8 @@ import com.lehaine.game.*
 import com.lehaine.game.entity.DebugEntity
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
-import com.lehaine.littlekt.extras.entity.toGridPosition
 import com.lehaine.littlekt.extras.graphics.PixelSmoothFrameBuffer
+import com.lehaine.littlekt.extras.grid.entity.toGridPosition
 import com.lehaine.littlekt.extras.shader.PixelSmoothFragmentShader
 import com.lehaine.littlekt.extras.shader.PixelSmoothVertexShader
 import com.lehaine.littlekt.file.ldtk.LDtkMapLoader
@@ -44,7 +44,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     )
     private val pixelSmoothShader =
         ShaderProgram(PixelSmoothVertexShader(), PixelSmoothFragmentShader()).also { it.prepare(context) }
-    private val sceneCamera = EntityCamera().apply {
+    private val sceneCamera = GridEntityCamera().apply {
         fbo = sceneFbo
     }
     private val sceneViewport = ScreenViewport(context.graphics.width, context.graphics.height, camera = sceneCamera)

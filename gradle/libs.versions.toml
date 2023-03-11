@@ -6,6 +6,7 @@ kotlinx-html = "0.7.2"
 kotlinx-coroutines = "1.6.4"
 
 littlekt = "0.7.0.27e6598-SNAPSHOT"
+fleks = "2.3"
 
 [libraries]
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "plugin-android" }
@@ -16,6 +17,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-html-js = { module = "org.jetbrains.kotlinx:kotlinx-html-js", version.ref = "kotlinx-html" }
 
 littlekt-core = { module = "com.lehaine.littlekt:core", version.ref = "littlekt" }
+fleks = { module = "io.github.quillraven.fleks:Fleks", version.ref = "fleks" }
 
 [bundles]
 plugins = ["plugin-android", "plugin-kotlin", "plugin-texturepacker"]

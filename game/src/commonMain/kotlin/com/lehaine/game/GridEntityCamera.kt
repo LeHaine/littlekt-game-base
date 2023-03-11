@@ -1,8 +1,8 @@
 package com.lehaine.game
 
 import com.lehaine.littlekt.extras.Cooldown
-import com.lehaine.littlekt.extras.entity.Entity
 import com.lehaine.littlekt.extras.graphics.PixelSmoothCamera
+import com.lehaine.littlekt.extras.grid.entity.GridEntity
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.clamp
@@ -18,7 +18,7 @@ import kotlin.time.Duration
  * @author Colton Daily
  * @date 3/1/2023
  */
-class EntityCamera : PixelSmoothCamera() {
+class GridEntityCamera : PixelSmoothCamera() {
     var tmod: Float = 1f
 
     /**
@@ -27,7 +27,7 @@ class EntityCamera : PixelSmoothCamera() {
     val viewBounds: Rect = Rect()
     var clampToBounds = true
     var brakeDistanceNearBounds = 0.1f
-    var following: Entity? = null
+    var following: GridEntity? = null
         private set
 
     var deadZonePctX = 0.04f
@@ -214,7 +214,7 @@ class EntityCamera : PixelSmoothCamera() {
         bumpY += angle.radians * distance
     }
 
-    fun follow(entity: Entity?, setImmediately: Boolean = false) {
+    fun follow(entity: GridEntity?, setImmediately: Boolean = false) {
         following = entity
         if (setImmediately) {
             entity ?: error("Target entity not set!!")
