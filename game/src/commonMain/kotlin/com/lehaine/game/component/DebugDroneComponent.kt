@@ -8,7 +8,7 @@ import com.github.quillraven.fleks.ComponentType
  * @date 3/11/2023
  */
 class DebugDroneComponent : Component<DebugDroneComponent> {
-    var speed = 0.05f
+    var speed = 0.12f
     var xMoveStrength = 0f
     var yMoveStrength = 0f
 

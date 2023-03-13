@@ -12,8 +12,12 @@ import com.lehaine.littlekt.util.seconds
  */
 class CameraSystem(private val camera: GridEntityCamera, private val viewBounds: Rect) : IntervalSystem() {
 
+    private var tmod = 1f
+    private val targetFPS = 60
     override fun onTick() {
+        tmod = deltaTime * targetFPS
         viewBounds.calculateViewBounds(camera)
+        camera.tmod = tmod
         camera.update(deltaTime.seconds)
     }
 }
