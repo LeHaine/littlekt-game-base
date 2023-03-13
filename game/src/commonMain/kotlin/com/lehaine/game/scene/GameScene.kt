@@ -4,6 +4,8 @@ import com.github.quillraven.fleks.World
 import com.github.quillraven.fleks.world
 import com.lehaine.game.*
 import com.lehaine.game.component.LDtkLayerComponent
+import com.lehaine.game.component.RenderLayer
+import com.lehaine.game.component.RenderLayerComponent
 import com.lehaine.game.entity.addDroneSystems
 import com.lehaine.game.entity.debugDrone
 import com.lehaine.game.system.*
@@ -106,33 +108,60 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
             )
 
         systems {
-            addDroneSystems(context.input)
-            add(GridCameraUpdaterSystem(sceneCamera))
+            run debugging@{
+                addDroneSystems(context.input)
+            }
 
-            add(GridMoveSystem(gridCollisionPool))
-            add(GridCollisionResolverSystem())
-            add(GridCollisionCleanupSystem(gridCollisionPool))
+            run camera@{
+                add(GridCameraUpdaterSystem(sceneCamera))
+            }
 
-            add(AnimationSystem())
-            add(SpriteRenderBoundsCalculationSystem())
-            add(ParticleSimulatorSystem(particleSimulator))
+            run gridPhysics@{
+                add(GridMoveSystem(gridCollisionPool))
+                add(GridCollisionResolverSystem())
+                add(GridCollisionCleanupSystem(gridCollisionPool))
+            }
+
+            run graphics@{
+                add(AnimationSystem())
+                add(SpriteRenderBoundsCalculationSystem())
+                add(ParticleSimulatorSystem(particleSimulator))
+            }
 
             // render scene
-            add(renderSceneFboStartSystem)
-            add(CameraViewBoundsCalculatorSystem(sceneCamera, sceneCameraViewBounds))
-            add(ParticlesBackgroundRenderSystems(batch, sceneCameraViewBounds))
+            run renderScene@{
+                add(renderSceneFboStartSystem)
+                add(CameraViewBoundsCalculatorSystem(sceneCamera, sceneCameraViewBounds))
 
-            add(RenderLDtkLayerSystem(batch, sceneCameraViewBounds))
-            add(RenderSceneSystem(batch, sceneCameraViewBounds))
+                // background related items
+                run backgroundItems@{
+                    add(ParticlesBackgroundRenderSystems(batch, sceneCameraViewBounds))
+                    add(RenderBackgroundLDtkLayerSystem(batch, sceneCameraViewBounds))
+                }
 
-            add(ParticlesForegroundRenderSystems(batch, sceneCameraViewBounds))
-            add(renderSceneFboEndSystem)
+                // main related items
+                run mainItems@{
+                    add(RenderMainLDtkLayerSystem(batch, sceneCameraViewBounds))
+                    add(RenderSceneSystem(batch, sceneCameraViewBounds))
+                }
+
+                // foreground related items
+                run foregroundItems@{
+                    add(RenderForegroundLDtkLayerSystem(batch, sceneCameraViewBounds))
+                    add(ParticlesForegroundRenderSystems(batch, sceneCameraViewBounds))
+                }
+                add(renderSceneFboEndSystem)
+            }
 
             // render scene fbo
-            add(renderSceneFboSystem)
+            run sceneFbo@{
+                add(renderSceneFboSystem)
+            }
 
             // render ui
-            add(UpdateAndRenderSceneGraphSystem(batch, graph))
+            run ui@{
+                add(UpdateAndRenderSceneGraphSystem(batch, graph))
+            }
         }
     }
     val fx: Fx = Fx(world, particleSimulator)
@@ -146,6 +175,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
             map.levels[0].layers.forEach { layer ->
                 world.entity {
                     it += LDtkLayerComponent(layer)
+                    it += RenderLayerComponent(RenderLayer.BACKGROUND)
                 }
             }
             val debugger = world.debugDrone(Assets.atlas.getByPrefix("fxPixel").slice)
