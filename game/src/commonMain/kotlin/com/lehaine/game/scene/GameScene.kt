@@ -107,7 +107,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
         systems {
             addDroneSystems(context.input)
-            add(CameraSystem(sceneCamera, sceneCameraViewBounds))
+            add(GridCameraUpdaterSystem(sceneCamera))
 
             add(GridMoveSystem(gridCollisionPool))
             add(GridCollisionResolverSystem())
@@ -119,6 +119,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
             // render scene
             add(renderSceneFboStartSystem)
+            add(CameraViewBoundsCalculatorSystem(sceneCamera, sceneCameraViewBounds))
             add(ParticlesBackgroundRenderSystems(batch, sceneCameraViewBounds))
 
             add(RenderLDtkLayerSystem(batch, sceneCameraViewBounds))
