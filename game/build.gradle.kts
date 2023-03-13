@@ -98,6 +98,7 @@ kotlin {
             dependencies {
                 implementation(libs.littlekt.core)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.fleks)
                 implementation(project(":littlekt-extras:core"))
             }
         }

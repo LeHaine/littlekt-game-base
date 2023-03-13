@@ -1,11 +1,18 @@
 package com.lehaine.game.scene
 
+import com.github.quillraven.fleks.World
+import com.github.quillraven.fleks.world
 import com.lehaine.game.*
-import com.lehaine.game.entity.DebugEntity
+import com.lehaine.game.component.LDtkLayerComponent
+import com.lehaine.game.entity.addDroneSystems
+import com.lehaine.game.entity.debugDrone
+import com.lehaine.game.system.*
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
+import com.lehaine.littlekt.extras.ecs.component.GridCollisionResultComponent
+import com.lehaine.littlekt.extras.ecs.component.GridComponent
+import com.lehaine.littlekt.extras.ecs.system.*
 import com.lehaine.littlekt.extras.graphics.PixelSmoothFrameBuffer
-import com.lehaine.littlekt.extras.grid.entity.toGridPosition
 import com.lehaine.littlekt.extras.shader.PixelSmoothFragmentShader
 import com.lehaine.littlekt.extras.shader.PixelSmoothVertexShader
 import com.lehaine.littlekt.file.ldtk.LDtkMapLoader
@@ -15,13 +22,15 @@ import com.lehaine.littlekt.graph.node.ui.control
 import com.lehaine.littlekt.graph.node.ui.label
 import com.lehaine.littlekt.graph.sceneGraph
 import com.lehaine.littlekt.graphics.g2d.Batch
+import com.lehaine.littlekt.graphics.g2d.ParticleSimulator
 import com.lehaine.littlekt.graphics.g2d.TextureSlice
 import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
-import com.lehaine.littlekt.graphics.g2d.use
 import com.lehaine.littlekt.graphics.gl.ClearBufferMask
 import com.lehaine.littlekt.graphics.gl.State
 import com.lehaine.littlekt.graphics.shader.ShaderProgram
-import com.lehaine.littlekt.graphics.use
+import com.lehaine.littlekt.math.Rect
+import com.lehaine.littlekt.util.datastructure.Pool
+import com.lehaine.littlekt.util.seconds
 import com.lehaine.littlekt.util.viewport.ExtendViewport
 import com.lehaine.littlekt.util.viewport.ScreenViewport
 import kotlin.time.Duration
@@ -32,7 +41,6 @@ import kotlin.time.Duration
  */
 class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRenderer) : FixedScene(context) {
 
-    private val fx = Fx()
     private var sceneFbo =
         PixelSmoothFrameBuffer(context.graphics.width, context.graphics.height, 160).also { it.prepare(context) }
     private var sceneFboSlice = TextureSlice(
@@ -49,6 +57,12 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     }
     private val sceneViewport = ScreenViewport(context.graphics.width, context.graphics.height, camera = sceneCamera)
     private val screenViewport = ScreenViewport(context.graphics.width, context.graphics.height)
+
+    private val sceneCameraViewBounds = Rect()
+
+    private lateinit var renderSceneFboStartSystem: RenderSceneFboStartSystem
+    private lateinit var renderSceneFboEndSystem: RenderSceneFboEndSystem
+    private lateinit var renderSceneFboSystem: RenderSceneFboSystem
 
     private val ui: Control
     private val graph =
@@ -74,18 +88,73 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 }
             }
         }
+    private val particleSimulator = ParticleSimulator(2048)
+
+    val world: World = world {
+        val gridCollisionPool = Pool { GridCollisionResultComponent(GridCollisionResultComponent.Axes.X, 0) }
+        renderSceneFboStartSystem = RenderSceneFboStartSystem(context, batch, sceneFbo, sceneViewport)
+        renderSceneFboEndSystem = RenderSceneFboEndSystem(batch, sceneFbo)
+        renderSceneFboSystem =
+            RenderSceneFboSystem(
+                context,
+                batch,
+                sceneFbo,
+                sceneFboSlice,
+                pixelSmoothShader,
+                sceneCamera,
+                screenViewport
+            )
+
+        systems {
+            addDroneSystems(context.input)
+            add(CameraSystem(sceneCamera, sceneCameraViewBounds))
+
+            add(GridMoveSystem(gridCollisionPool))
+            add(GridCollisionResolverSystem())
+            add(GridCollisionCleanupSystem(gridCollisionPool))
+
+            add(AnimationSystem())
+            add(SpriteRenderBoundsCalculationSystem())
+            add(ParticleSimulatorSystem(particleSimulator))
+
+            // render scene
+            add(renderSceneFboStartSystem)
+            add(ParticlesBackgroundRenderSystems(batch, sceneCameraViewBounds))
+
+            add(RenderLDtkLayerSystem(batch, sceneCameraViewBounds))
+            add(RenderSceneSystem(batch, sceneCameraViewBounds))
+
+            add(ParticlesForegroundRenderSystems(batch, sceneCameraViewBounds))
+            add(renderSceneFboEndSystem)
+
+            // render scene fbo
+            add(renderSceneFboSystem)
+
+            // render ui
+            add(UpdateAndRenderSceneGraphSystem(batch, graph))
+        }
+    }
+    val fx: Fx = Fx(world, particleSimulator)
 
     val mapLoader by Assets.provider.load<LDtkMapLoader>(context.resourcesVfs["world.ldtk"])
-    val world by Assets.provider.prepare { mapLoader.loadMap(true) }
-    val level by Assets.provider.prepare { Level(world.levels[0]) }
-    private val debugger by Assets.provider.prepare { DebugEntity(context) }
+    val map by Assets.provider.prepare { mapLoader.loadMap(true) }
+    val level by Assets.provider.prepare { Level(map.levels[0]) }
 
     init {
         Assets.provider.prepare {
-            debugger.toGridPosition(15, 15)
-            sceneCamera.follow(debugger, true)
-            sceneCamera.viewBounds.width = world.levels[0].pxWidth.toFloat()
-            sceneCamera.viewBounds.height = world.levels[0].pxHeight.toFloat()
+            map.levels[0].layers.forEach { layer ->
+                world.entity {
+                    it += LDtkLayerComponent(layer)
+                }
+            }
+            val debugger = world.debugDrone(Assets.atlas.getByPrefix("fxPixel").slice)
+            with(world) {
+                debugger[GridComponent].toGridPosition(15, 15)
+
+                sceneCamera.follow(debugger[GridComponent], true)
+                sceneCamera.viewBounds.width = map.levels[0].pxWidth.toFloat()
+                sceneCamera.viewBounds.height = map.levels[0].pxHeight.toFloat()
+            }
         }
     }
 
@@ -108,13 +177,12 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         sceneViewport.update(sceneFbo.width, sceneFbo.height, context)
         screenViewport.update(width, height, this, true)
         sceneCamera.fbo = sceneFbo
+
+        renderSceneFboStartSystem.setFbo(sceneFbo)
+        renderSceneFboEndSystem.setFbo(sceneFbo)
+        renderSceneFboSystem.updateFboAndSlice(sceneFbo, sceneFboSlice)
     }
 
-    override fun Context.fixedUpdate() {
-        if (!Assets.provider.fullyLoaded) return
-
-        debugger.fixedUpdate()
-    }
 
     override fun Context.render(dt: Duration) {
         if (!Assets.provider.fullyLoaded) return
@@ -123,66 +191,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         gl.clearColor(0.1f, 0.1f, 0.1f, 1f)
         gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
 
-        // update fx, camera, and entities
-        debugger.fixedProgressionRatio = fixedProgressionRatio
-        debugger.preUpdate(dt)
-        debugger.update(dt)
-
-        fx.update(dt)
-
-        sceneCamera.tmod = tmod
-        sceneCamera.update(dt)
-        debugger.postUpdate(dt)
-
-
-        // render scene
-        sceneViewport.apply(this)
-        sceneFbo.use {
-            gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
-            batch.useDefaultShader()
-            batch.use(sceneCamera.viewProjection) {
-                // render background
-                fx.bgNormal.render(batch, sceneCamera, shapeRenderer)
-                fx.bgAdd.render(batch, sceneCamera, shapeRenderer)
-
-                // render main
-                world.render(batch, sceneCamera)
-                debugger.render(batch, sceneCamera, shapeRenderer)
-
-                // render top
-                fx.bgNormal.render(batch, sceneCamera, shapeRenderer)
-                fx.bgAdd.render(batch, sceneCamera, shapeRenderer)
-            }
-        }
-
-        // render pixel smooth frame buffer
-        screenViewport.apply(this)
-        batch.shader = pixelSmoothShader
-        batch.use(screenViewport.camera.viewProjection) {
-            pixelSmoothShader.vertexShader.uTextureSizes.apply(
-                pixelSmoothShader,
-                sceneFbo.width.toFloat(),
-                sceneFbo.height.toFloat(),
-                0f,
-                0f
-            )
-            pixelSmoothShader.vertexShader.uSampleProperties.apply(
-                pixelSmoothShader, 0f, 0f, sceneCamera.scaledDistX, sceneCamera.scaledDistY
-            )
-            batch.draw(
-                sceneFboSlice,
-                0f,
-                0f,
-                width = context.graphics.width.toFloat(),
-                height = context.graphics.height.toFloat(),
-                flipY = true
-            )
-        }
-        batch.useDefaultShader()
-
-        // render UI
-        graph.update(dt)
-        graph.render()
+        world.update(dt.seconds)
     }
 
     override fun Context.dispose() {
