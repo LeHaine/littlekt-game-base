@@ -5,6 +5,7 @@ import com.github.quillraven.fleks.SystemConfiguration
 import com.github.quillraven.fleks.World
 import com.lehaine.game.Config
 import com.lehaine.game.component.DebugDroneComponent
+import com.lehaine.game.component.DebugSpriteComponent
 import com.lehaine.game.system.DebugDroneInputSystem
 import com.lehaine.game.system.DebugDroneMoveSystem
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
@@ -27,5 +28,6 @@ fun World.debugDrone(slice: TextureSlice): Entity = entity {
         scaleX = 10f
         scaleY = 10f
     }
+    it += DebugSpriteComponent()
 }
 

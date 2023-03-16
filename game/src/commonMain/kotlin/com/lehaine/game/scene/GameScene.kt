@@ -8,18 +8,22 @@ import com.lehaine.game.component.RenderLayer
 import com.lehaine.game.component.RenderLayerComponent
 import com.lehaine.game.entity.addDroneSystems
 import com.lehaine.game.entity.debugDrone
-import com.lehaine.game.system.*
+import com.lehaine.game.event.ToggleDebug
+import com.lehaine.game.system.GridCameraUpdaterSystem
+import com.lehaine.game.system.ParticleSimulatorSystem
+import com.lehaine.game.system.RenderSystem
+import com.lehaine.game.system.UpdateAndRenderSceneGraphSystem
+import com.lehaine.game.system.render.stage.*
 import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.extras.ecs.component.GridCollisionResultComponent
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
+import com.lehaine.littlekt.extras.ecs.event.EventBus
 import com.lehaine.littlekt.extras.ecs.system.*
 import com.lehaine.littlekt.extras.graphics.PixelSmoothFrameBuffer
-import com.lehaine.littlekt.extras.shader.PixelSmoothFragmentShader
-import com.lehaine.littlekt.extras.shader.PixelSmoothVertexShader
 import com.lehaine.littlekt.file.ldtk.LDtkMapLoader
 import com.lehaine.littlekt.graph.node.ui.Control
-import com.lehaine.littlekt.graph.node.ui.centerContainer
+import com.lehaine.littlekt.graph.node.ui.column
 import com.lehaine.littlekt.graph.node.ui.control
 import com.lehaine.littlekt.graph.node.ui.label
 import com.lehaine.littlekt.graph.sceneGraph
@@ -27,9 +31,7 @@ import com.lehaine.littlekt.graphics.g2d.Batch
 import com.lehaine.littlekt.graphics.g2d.ParticleSimulator
 import com.lehaine.littlekt.graphics.g2d.TextureSlice
 import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
-import com.lehaine.littlekt.graphics.gl.ClearBufferMask
-import com.lehaine.littlekt.graphics.gl.State
-import com.lehaine.littlekt.graphics.shader.ShaderProgram
+import com.lehaine.littlekt.input.Key
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.datastructure.Pool
 import com.lehaine.littlekt.util.seconds
@@ -43,6 +45,8 @@ import kotlin.time.Duration
  */
 class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRenderer) : FixedScene(context) {
 
+    private val eventBus = EventBus()
+
     private var sceneFbo =
         PixelSmoothFrameBuffer(context.graphics.width, context.graphics.height, 160).also { it.prepare(context) }
     private var sceneFboSlice = TextureSlice(
@@ -52,8 +56,6 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         sceneFbo.pxWidth,
         sceneFbo.pxHeight
     )
-    private val pixelSmoothShader =
-        ShaderProgram(PixelSmoothVertexShader(), PixelSmoothFragmentShader()).also { it.prepare(context) }
     private val sceneCamera = GridEntityCamera().apply {
         fbo = sceneFbo
     }
@@ -62,9 +64,8 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
     private val sceneCameraViewBounds = Rect()
 
-    private lateinit var renderSceneFboStartSystem: RenderSceneFboStartSystem
-    private lateinit var renderSceneFboEndSystem: RenderSceneFboEndSystem
-    private lateinit var renderSceneFboSystem: RenderSceneFboSystem
+    private lateinit var renderSceneToFboStage: RenderSceneToFboStage
+    private lateinit var renderSceneStage: RenderSceneStage
 
     private val ui: Control
     private val graph =
@@ -80,32 +81,37 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 anchorRight = 1f
                 anchorBottom = 1f
 
-                centerContainer {
-                    anchorRight = 1f
-                    anchorBottom = 1f
+                column {
+                    marginLeft = 10f
+                    marginTop = 10f
+
                     label {
-                        text = "TODO: Implement game logic"
                         font = Assets.pixelFont
+                        onUpdate += {
+                            text = "FPS: ${context.stats.fps.toInt()}"
+                        }
+                    }
+
+                    label {
+                        font = Assets.pixelFont
+                        var debug = false
+                        eventBus.register<ToggleDebug> {
+                            debug = !debug
+                        }
+                        onUpdate += {
+                            text = "Debug mode: $debug ('K' to toggle)"
+                        }
                     }
                 }
+
             }
         }
     private val particleSimulator = ParticleSimulator(2048)
 
     val world: World = world {
         val gridCollisionPool = Pool { GridCollisionResultComponent(GridCollisionResultComponent.Axes.X, 0) }
-        renderSceneFboStartSystem = RenderSceneFboStartSystem(context, batch, sceneFbo, sceneViewport)
-        renderSceneFboEndSystem = RenderSceneFboEndSystem(batch, sceneFbo)
-        renderSceneFboSystem =
-            RenderSceneFboSystem(
-                context,
-                batch,
-                sceneFbo,
-                sceneFboSlice,
-                pixelSmoothShader,
-                sceneCamera,
-                screenViewport
-            )
+
+        initRenderStages()
 
         systems {
             run debugging@{
@@ -128,38 +134,18 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 add(ParticleSimulatorSystem(particleSimulator))
             }
 
-            // render scene
-            run renderScene@{
-                add(renderSceneFboStartSystem)
-                add(CameraViewBoundsCalculatorSystem(sceneCamera, sceneCameraViewBounds))
+            run render@{
+                // render game scene
+                add(
+                    RenderSystem(
+                        context = context,
+                        viewport = sceneViewport,
+                        viewBounds = sceneCameraViewBounds,
+                        stages = listOf(renderSceneToFboStage, renderSceneStage)
+                    )
+                )
 
-                // background related items
-                run backgroundItems@{
-                    add(ParticlesBackgroundRenderSystems(batch, sceneCameraViewBounds))
-                    add(RenderBackgroundLDtkLayerSystem(batch, sceneCameraViewBounds))
-                }
-
-                // main related items
-                run mainItems@{
-                    add(RenderMainLDtkLayerSystem(batch, sceneCameraViewBounds))
-                    add(RenderSceneSystem(batch, sceneCameraViewBounds))
-                }
-
-                // foreground related items
-                run foregroundItems@{
-                    add(RenderForegroundLDtkLayerSystem(batch, sceneCameraViewBounds))
-                    add(ParticlesForegroundRenderSystems(batch, sceneCameraViewBounds))
-                }
-                add(renderSceneFboEndSystem)
-            }
-
-            // render scene fbo
-            run sceneFbo@{
-                add(renderSceneFboSystem)
-            }
-
-            // render ui
-            run ui@{
+                // render ui
                 add(UpdateAndRenderSceneGraphSystem(batch, graph))
             }
         }
@@ -171,21 +157,58 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     val level by Assets.provider.prepare { Level(map.levels[0]) }
 
     init {
-        Assets.provider.prepare {
-            map.levels[0].layers.forEach { layer ->
-                world.entity {
-                    it += LDtkLayerComponent(layer)
-                    it += RenderLayerComponent(RenderLayer.BACKGROUND)
-                }
-            }
-            val debugger = world.debugDrone(Assets.atlas.getByPrefix("fxPixel").slice)
-            with(world) {
-                debugger[GridComponent].toGridPosition(15, 15)
+        Assets.provider.prepare(::initLevel)
+    }
 
-                sceneCamera.follow(debugger[GridComponent], true)
-                sceneCamera.viewBounds.width = map.levels[0].pxWidth.toFloat()
-                sceneCamera.viewBounds.height = map.levels[0].pxHeight.toFloat()
+    private fun initRenderStages() {
+        renderSceneToFboStage = RenderSceneToFboStage(
+            context = context,
+            batch = batch,
+            sceneFbo = sceneFbo,
+            sceneViewport = sceneViewport,
+            stages = listOf(
+                // background
+                RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Background),
+                RenderParticlesStage(batch, sceneCameraViewBounds, RenderLayerComponent.Background),
+
+                // main
+                RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Main),
+                RenderSpritesStage(batch, sceneCameraViewBounds),
+
+                // foreground
+                RenderParticlesStage(batch, sceneCameraViewBounds, RenderLayerComponent.Foreground),
+                RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Foreground),
+
+                // debug
+                DebugRenderSpritesStage(batch, sceneCameraViewBounds, eventBus),
+                DebugRenderBoundsStage(shapeRenderer, sceneCameraViewBounds, eventBus)
+            )
+        )
+
+        renderSceneStage = RenderSceneStage(
+            context = context,
+            batch = batch,
+            sceneFbo = sceneFbo,
+            sceneFboSlice = sceneFboSlice,
+            sceneCamera = sceneCamera,
+            screenViewport = screenViewport
+        )
+    }
+
+    private fun initLevel() {
+        map.levels[0].layers.forEach { layer ->
+            world.entity {
+                it += LDtkLayerComponent(layer, 0)
+                it += RenderLayerComponent(RenderLayer.BACKGROUND)
             }
+        }
+        val debugger = world.debugDrone(Assets.atlas.getByPrefix("fxPixel").slice)
+        with(world) {
+            debugger[GridComponent].toGridPosition(15, 15)
+
+            sceneCamera.follow(debugger[GridComponent], true)
+            sceneCamera.viewBounds.width = map.levels[0].pxWidth.toFloat()
+            sceneCamera.viewBounds.height = map.levels[0].pxHeight.toFloat()
         }
     }
 
@@ -209,18 +232,22 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         screenViewport.update(width, height, this, true)
         sceneCamera.fbo = sceneFbo
 
-        renderSceneFboStartSystem.setFbo(sceneFbo)
-        renderSceneFboEndSystem.setFbo(sceneFbo)
-        renderSceneFboSystem.updateFboAndSlice(sceneFbo, sceneFboSlice)
+        renderSceneToFboStage.updateFbo(sceneFbo)
+        renderSceneStage.updateFboAndSlice(sceneFbo, sceneFboSlice)
     }
 
 
     override fun Context.render(dt: Duration) {
         if (!Assets.provider.fullyLoaded) return
-        gl.enable(State.SCISSOR_TEST)
-        gl.scissor(0, 0, graphics.width, graphics.height)
-        gl.clearColor(0.1f, 0.1f, 0.1f, 1f)
-        gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+
+        if (input.isKeyJustPressed(Key.K)) {
+            eventBus.send(ToggleDebug)
+        }
+
+        if (input.isKeyPressed(Key.SHIFT_LEFT) && input.isKeyJustPressed(Key.R)) {
+            initLevel()
+            return
+        }
 
         world.update(dt.seconds)
     }
