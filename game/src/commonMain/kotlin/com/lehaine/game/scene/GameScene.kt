@@ -34,6 +34,7 @@ import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
 import com.lehaine.littlekt.input.Key
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.util.datastructure.Pool
+import com.lehaine.littlekt.util.forEachReversed
 import com.lehaine.littlekt.util.seconds
 import com.lehaine.littlekt.util.viewport.ExtendViewport
 import com.lehaine.littlekt.util.viewport.ScreenViewport
@@ -196,9 +197,10 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     }
 
     private fun initLevel() {
-        map.levels[0].layers.forEach { layer ->
+        var idx = 0
+        map.levels[0].layers.forEachReversed { layer ->
             world.entity {
-                it += LDtkLayerComponent(layer, 0)
+                it += LDtkLayerComponent(layer, idx++)
                 it += RenderLayerComponent(RenderLayer.BACKGROUND)
             }
         }
