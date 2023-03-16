@@ -1,8 +1,8 @@
 package com.lehaine.game
 
 import com.lehaine.littlekt.extras.Cooldown
+import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.graphics.PixelSmoothCamera
-import com.lehaine.littlekt.extras.grid.entity.GridEntity
 import com.lehaine.littlekt.math.MutableVec2f
 import com.lehaine.littlekt.math.Rect
 import com.lehaine.littlekt.math.clamp
@@ -27,7 +27,7 @@ class GridEntityCamera : PixelSmoothCamera() {
     val viewBounds: Rect = Rect()
     var clampToBounds = true
     var brakeDistanceNearBounds = 0.1f
-    var following: GridEntity? = null
+    var following: GridComponent? = null
         private set
 
     var deadZonePctX = 0.04f
@@ -214,12 +214,12 @@ class GridEntityCamera : PixelSmoothCamera() {
         bumpY += angle.radians * distance
     }
 
-    fun follow(entity: GridEntity?, setImmediately: Boolean = false) {
-        following = entity
+    fun follow(gridCmp: GridComponent?, setImmediately: Boolean = false) {
+        following = gridCmp
         if (setImmediately) {
-            entity ?: error("Target entity not set!!")
-            rawFocus.x = entity.centerX
-            rawFocus.y = entity.centerY
+            gridCmp ?: error("Target entity not set!!")
+            rawFocus.x = gridCmp.centerX
+            rawFocus.y = gridCmp.centerY
         }
     }
 
