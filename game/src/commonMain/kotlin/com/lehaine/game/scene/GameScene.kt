@@ -125,7 +125,6 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
             run gridPhysics@{
                 add(GridMoveSystem(gridCollisionPool))
-                add(GridCollisionResolverSystem())
                 add(GridCollisionCleanupSystem(gridCollisionPool))
             }
 
