@@ -13,8 +13,8 @@ To export tags from an aseprite file:
 
 ## Exporting tiles for use with **LDtk**
 Open the `tiles.aseprite` file which will contain all the tiles used in the **LDtk** project. 
-Exporting the tiles to `src/commonMain/resources/tiles.png` to be used by the **LDtk** project and **Korge**.
+Exporting the tiles to `src/commonMain/resources/tiles.png` to be used by the **LDtk** project and **LittleKt**.
 
 
 ## Misc
-If you need to change settings on the **TexturePacker** file, then open up the `tiles.tps` file and edit the settings there. It is currently set up to handle exporting correctly for pixel art in Korge. This will probably work for most art styles.
+If you need to change settings on the **TexturePacker** file, then open up the `tiles.tps` file and edit the settings there. It is currently set up to handle exporting correctly for pixel art in LittleKt. This will probably work for most art styles.
