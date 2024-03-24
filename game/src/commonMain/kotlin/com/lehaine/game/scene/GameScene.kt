@@ -1,7 +1,7 @@
 package com.lehaine.game.scene
 
 import com.github.quillraven.fleks.World
-import com.github.quillraven.fleks.world
+import com.github.quillraven.fleks.configureWorld
 import com.lehaine.game.*
 import com.lehaine.game.component.LDtkLayerComponent
 import com.lehaine.game.component.RenderLayer
@@ -19,7 +19,10 @@ import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.extras.ecs.component.GridCollisionResultComponent
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.ecs.event.EventBus
-import com.lehaine.littlekt.extras.ecs.system.*
+import com.lehaine.littlekt.extras.ecs.system.AnimationSystem
+import com.lehaine.littlekt.extras.ecs.system.GridCollisionCleanupSystem
+import com.lehaine.littlekt.extras.ecs.system.GridMoveSystem
+import com.lehaine.littlekt.extras.ecs.system.SpriteRenderBoundsCalculationSystem
 import com.lehaine.littlekt.extras.graphics.PixelSmoothFrameBuffer
 import com.lehaine.littlekt.file.ldtk.LDtkMapLoader
 import com.lehaine.littlekt.graph.node.ui.Control
@@ -109,7 +112,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         }
     private val particleSimulator = ParticleSimulator(2048)
 
-    val world: World = world {
+    val world: World = configureWorld {
         val gridCollisionPool = Pool { GridCollisionResultComponent(GridCollisionResultComponent.Axes.X, 0) }
 
         initRenderStages()

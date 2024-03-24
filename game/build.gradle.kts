@@ -9,9 +9,9 @@ repositories {
 }
 
 plugins {
-    kotlin("multiplatform")
-    id("com.android.application")
-    id("com.lehaine.littlekt.gradle.texturepacker")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.littlekt.gradle.texturepacker) apply false
 }
 
 littleKt {
@@ -67,7 +67,7 @@ kotlin {
             }
         }
         compilations.all {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         testRuns["test"].executionTask.configure {
             useJUnit()
@@ -120,6 +120,7 @@ kotlin {
 }
 
 android {
+    namespace = "com.game.template"
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         assets.srcDirs("src/commonMain/resources")
@@ -129,6 +130,10 @@ android {
     defaultConfig {
         minSdk = (findProperty("android.minSdk") as String).toInt()
         targetSdk = (findProperty("android.targetSdk") as String).toInt()
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

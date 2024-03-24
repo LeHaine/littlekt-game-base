@@ -1,23 +1,19 @@
 [versions]
-plugin-android = "7.3.1"
-plugin-kotlin = "1.9.21"
-
+agp = "8.2.0"
+kotlin = "1.9.23"
+kotlinx-coroutines = "1.8.0"
 kotlinx-html = "0.9.1"
-kotlinx-coroutines = "1.8.0-RC2"
-
-littlekt = "0.9.0.2b0b543-SNAPSHOT"
-fleks = "2.3"
+littlekt = "0.9.0"
+fleks = "2.6"
 
 [libraries]
-plugin-android = { module = "com.android.tools.build:gradle", version.ref = "plugin-android" }
-plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "plugin-kotlin" }
-plugin-texturepacker = {module= "com.lehaine.littlekt.gradle:texturepacker", version.ref = "littlekt"}
-
+fleks = { module = "io.github.quillraven.fleks:Fleks", version.ref = "fleks" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-html-js = { module = "org.jetbrains.kotlinx:kotlinx-html-js", version.ref = "kotlinx-html" }
-
 littlekt-core = { module = "com.lehaine.littlekt:core", version.ref = "littlekt" }
-fleks = { module = "io.github.quillraven.fleks:Fleks", version.ref = "fleks" }
 
-[bundles]
-plugins = ["plugin-android", "plugin-kotlin", "plugin-texturepacker"]
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+littlekt-gradle-texturepacker = { id = "com.lehaine.littlekt.gradle.texturepacker", version.ref = "littlekt" }
