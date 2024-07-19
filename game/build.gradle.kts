@@ -1,6 +1,6 @@
-import com.lehaine.littlekt.gradle.texturepacker.littleKt
-import com.lehaine.littlekt.gradle.texturepacker.packing
-import com.lehaine.littlekt.gradle.texturepacker.texturePacker
+import com.littlekt.gradle.texturepacker.littleKt
+import com.littlekt.gradle.texturepacker.packing
+import com.littlekt.gradle.texturepacker.texturePacker
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
@@ -9,7 +9,6 @@ repositories {
 }
 
 plugins {
-    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.littlekt.gradle.texturepacker) apply false
 }
@@ -29,7 +28,8 @@ group = "com.lehaine.game"
 version = "1.0"
 
 kotlin {
-    android()
+    tasks.withType<JavaExec> { jvmArgs("--enable-preview", "--enable-native-access=ALL-UNNAMED") }
+    applyDefaultHierarchyTemplate()
     jvm {
         compilations {
             val main by getting
@@ -67,7 +67,7 @@ kotlin {
             }
         }
         compilations.all {
-            kotlinOptions.jvmTarget = "17"
+            kotlinOptions.jvmTarget = "21"
         }
         testRuns["test"].executionTask.configure {
             useJUnit()
@@ -97,6 +97,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.littlekt.core)
+                implementation(libs.littlekt.scenegraph)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.fleks)
                 implementation(project(":littlekt-extras:core"))
@@ -115,25 +116,6 @@ kotlin {
             }
         }
         val jsTest by getting
-        val androidMain by getting
-    }
-}
-
-android {
-    namespace = "com.game.template"
-    sourceSets["main"].apply {
-        manifest.srcFile("src/androidMain/AndroidManifest.xml")
-        assets.srcDirs("src/commonMain/resources")
-    }
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
-
-    defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
-        targetSdk = (findProperty("android.targetSdk") as String).toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

@@ -1,7 +1,7 @@
 package com.lehaine.game
 
-import com.lehaine.littlekt.createLittleKtApp
-import com.lehaine.littlekt.graphics.Color
+import com.littlekt.createLittleKtApp
+import com.littlekt.graphics.Color
 import kotlinx.browser.window
 
 fun main() {

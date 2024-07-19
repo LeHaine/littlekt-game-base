@@ -12,9 +12,8 @@ import com.lehaine.game.event.ToggleDebug
 import com.lehaine.game.system.GridCameraUpdaterSystem
 import com.lehaine.game.system.ParticleSimulatorSystem
 import com.lehaine.game.system.RenderSystem
-import com.lehaine.game.system.UpdateAndRenderSceneGraphSystem
+import com.lehaine.game.system.UpdateSceneGraphSystem
 import com.lehaine.game.system.render.stage.*
-import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.extras.ecs.component.GridCollisionResultComponent
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
@@ -23,24 +22,25 @@ import com.lehaine.littlekt.extras.ecs.system.AnimationSystem
 import com.lehaine.littlekt.extras.ecs.system.GridCollisionCleanupSystem
 import com.lehaine.littlekt.extras.ecs.system.GridMoveSystem
 import com.lehaine.littlekt.extras.ecs.system.SpriteRenderBoundsCalculationSystem
-import com.lehaine.littlekt.extras.graphics.PixelSmoothFrameBuffer
-import com.lehaine.littlekt.file.ldtk.LDtkMapLoader
-import com.lehaine.littlekt.graph.node.ui.Control
-import com.lehaine.littlekt.graph.node.ui.column
-import com.lehaine.littlekt.graph.node.ui.control
-import com.lehaine.littlekt.graph.node.ui.label
-import com.lehaine.littlekt.graph.sceneGraph
-import com.lehaine.littlekt.graphics.g2d.Batch
-import com.lehaine.littlekt.graphics.g2d.ParticleSimulator
-import com.lehaine.littlekt.graphics.g2d.TextureSlice
-import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
-import com.lehaine.littlekt.input.Key
-import com.lehaine.littlekt.math.Rect
-import com.lehaine.littlekt.util.datastructure.Pool
-import com.lehaine.littlekt.util.forEachReversed
-import com.lehaine.littlekt.util.seconds
-import com.lehaine.littlekt.util.viewport.ExtendViewport
-import com.lehaine.littlekt.util.viewport.ScreenViewport
+import com.lehaine.littlekt.extras.graphics.PixelSmoothRenderTarget
+import com.littlekt.Context
+import com.littlekt.file.ldtk.LDtkMapLoader
+import com.littlekt.graph.node.ui.Control
+import com.littlekt.graph.node.ui.column
+import com.littlekt.graph.node.ui.control
+import com.littlekt.graph.node.ui.label
+import com.littlekt.graph.sceneGraph
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.graphics.g2d.ParticleSimulator
+import com.littlekt.graphics.g2d.TextureSlice
+import com.littlekt.graphics.g2d.shape.ShapeRenderer
+import com.littlekt.input.Key
+import com.littlekt.math.Rect
+import com.littlekt.util.datastructure.Pool
+import com.littlekt.util.datastructure.forEachReversed
+import com.littlekt.util.seconds
+import com.littlekt.util.viewport.ExtendViewport
+import com.littlekt.util.viewport.ScreenViewport
 import kotlin.time.Duration
 
 /**
@@ -51,65 +51,66 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
     private val eventBus = EventBus()
 
-    private var sceneFbo =
-        PixelSmoothFrameBuffer(context.graphics.width, context.graphics.height, 160).also { it.prepare(context) }
+    private var sceneRenderTarget = PixelSmoothRenderTarget(
+        context.graphics.device, context.graphics.preferredFormat, context.graphics.width, context.graphics.height, 160
+    )
     private var sceneFboSlice = TextureSlice(
-        sceneFbo.colorBufferTexture,
+        sceneRenderTarget.target,
         0,
-        sceneFbo.height - sceneFbo.pxHeight,
-        sceneFbo.pxWidth,
-        sceneFbo.pxHeight
+        sceneRenderTarget.height - sceneRenderTarget.pxHeight,
+        sceneRenderTarget.pxWidth,
+        sceneRenderTarget.pxHeight
     )
     private val sceneCamera = GridEntityCamera().apply {
-        fbo = sceneFbo
+        renderTarget = sceneRenderTarget
     }
     private val sceneViewport = ScreenViewport(context.graphics.width, context.graphics.height, camera = sceneCamera)
     private val screenViewport = ScreenViewport(context.graphics.width, context.graphics.height)
 
     private val sceneCameraViewBounds = Rect()
 
-    private lateinit var renderSceneToFboStage: RenderSceneToFboStage
+    private lateinit var renderSceneToRenderTargetStage: RenderSceneToRenderTargetStage
     private lateinit var renderSceneStage: RenderSceneStage
 
     private val ui: Control
-    private val graph =
-        sceneGraph(
-            context,
-            ExtendViewport(960, 540),
-            batch,
-            uiInputSignals = createUiGameInputSignals(),
-            whitePixel = Assets.atlas.getByPrefix("fxPixel").slice
-        ) {
-            ui = control {
-                name = "UI"
-                anchorRight = 1f
-                anchorBottom = 1f
+    private val graph = sceneGraph(
+        context,
+        ExtendViewport(960, 540),
+        batch,
+        uiInputSignals = createUiGameInputSignals(),
+        whitePixel = Assets.atlas.getByPrefix("fxPixel").slice
+    ) {
+        ui = control {
+            name = "UI"
+            anchorRight = 1f
+            anchorTop = 1f
 
-                column {
-                    marginLeft = 10f
-                    marginTop = 10f
+            column {
+                anchor(Control.AnchorLayout.TOP_LEFT)
+                marginLeft = 10f
+                marginTop = 10f
 
-                    label {
-                        font = Assets.pixelFont
-                        onUpdate += {
-                            text = "FPS: ${context.stats.fps.toInt()}"
-                        }
-                    }
-
-                    label {
-                        font = Assets.pixelFont
-                        var debug = false
-                        eventBus.register<ToggleDebug> {
-                            debug = !debug
-                        }
-                        onUpdate += {
-                            text = "Debug mode: $debug ('K' to toggle)"
-                        }
+                label {
+                    font = Assets.pixelFont
+                    onUpdate += {
+                        text = "FPS: ${context.stats.fps.toInt()}"
                     }
                 }
 
+                label {
+                    font = Assets.pixelFont
+                    var debug = false
+                    eventBus.register<ToggleDebug> {
+                        debug = !debug
+                    }
+                    onUpdate += {
+                        text = "Debug mode: $debug ('K' to toggle)"
+                    }
+                }
             }
+
         }
+    }
     private val particleSimulator = ParticleSimulator(2048)
 
     val world: World = configureWorld {
@@ -137,26 +138,31 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 add(ParticleSimulatorSystem(particleSimulator))
             }
 
+            run ui@{
+                add(UpdateSceneGraphSystem(graph))
+            }
+
             run render@{
-                // render game scene
+                // render game
                 add(
                     RenderSystem(
                         context = context,
                         viewport = sceneViewport,
                         viewBounds = sceneCameraViewBounds,
-                        stages = listOf(renderSceneToFboStage, renderSceneStage)
+                        stages = listOf(
+                            renderSceneToRenderTargetStage,
+                            renderSceneStage,
+                            RenderSceneGraphStage(batch, graph)
+                        )
                     )
                 )
-
-                // render ui
-                add(UpdateAndRenderSceneGraphSystem(batch, graph))
             }
         }
     }
     val fx: Fx = Fx(world, particleSimulator)
 
     val mapLoader by Assets.provider.load<LDtkMapLoader>(context.resourcesVfs["world.ldtk"])
-    val map by Assets.provider.prepare { mapLoader.loadMap(true) }
+    val map by Assets.provider.prepare { mapLoader.loadMap(false) }
     val level by Assets.provider.prepare { Level(map.levels[0]) }
 
     init {
@@ -164,12 +170,8 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     }
 
     private fun initRenderStages() {
-        renderSceneToFboStage = RenderSceneToFboStage(
-            context = context,
-            batch = batch,
-            sceneFbo = sceneFbo,
-            sceneViewport = sceneViewport,
-            stages = listOf(
+        renderSceneToRenderTargetStage = RenderSceneToRenderTargetStage(
+            batch = batch, renderTarget = sceneRenderTarget.target, sceneViewport = sceneViewport, stages = listOf(
                 // background
                 RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Background),
                 RenderParticlesStage(batch, sceneCameraViewBounds, RenderLayerComponent.Background),
@@ -191,8 +193,8 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         renderSceneStage = RenderSceneStage(
             context = context,
             batch = batch,
-            sceneFbo = sceneFbo,
-            sceneFboSlice = sceneFboSlice,
+            sceneRenderTarget = sceneRenderTarget,
+            sceneRenderTargetSlice = sceneFboSlice,
             sceneCamera = sceneCamera,
             screenViewport = screenViewport
         )
@@ -223,25 +225,25 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
     override fun Context.resize(width: Int, height: Int) {
         graph.resize(width, height, true)
-        sceneFbo.dispose()
-        sceneFbo = PixelSmoothFrameBuffer(width, height, 160).also { it.prepare(this) }
+        sceneRenderTarget.release()
+        sceneRenderTarget =
+            PixelSmoothRenderTarget(context.graphics.device, context.graphics.preferredFormat, width, height, 160)
         sceneFboSlice = TextureSlice(
-            sceneFbo.colorBufferTexture,
+            sceneRenderTarget.target,
             0,
-            sceneFbo.height - sceneFbo.pxHeight,
-            sceneFbo.pxWidth,
-            sceneFbo.pxHeight
+            sceneRenderTarget.height - sceneRenderTarget.pxHeight,
+            sceneRenderTarget.pxWidth,
+            sceneRenderTarget.pxHeight
         )
-        sceneViewport.update(sceneFbo.width, sceneFbo.height, context)
-        screenViewport.update(width, height, this, true)
-        sceneCamera.fbo = sceneFbo
+        sceneViewport.update(sceneRenderTarget.width, sceneRenderTarget.height)
+        screenViewport.update(width, height, true)
+        sceneCamera.renderTarget = sceneRenderTarget
 
-        renderSceneToFboStage.updateFbo(sceneFbo)
-        renderSceneStage.updateFboAndSlice(sceneFbo, sceneFboSlice)
+        renderSceneToRenderTargetStage.renderTarget = sceneRenderTarget.target
+        renderSceneStage.updateRenderTargetAndSlice(sceneRenderTarget, sceneFboSlice)
     }
 
-
-    override fun Context.render(dt: Duration) {
+    override fun Context.update(dt: Duration) {
         if (!Assets.provider.fullyLoaded) return
 
         if (input.isKeyJustPressed(Key.K)) {
@@ -256,7 +258,10 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         world.update(dt.seconds)
     }
 
-    override fun Context.dispose() {
-        graph.dispose()
+    override fun Context.release() {
+        graph.release()
+        world.removeAll()
+        sceneRenderTarget.release()
+        mapLoader.release()
     }
 }

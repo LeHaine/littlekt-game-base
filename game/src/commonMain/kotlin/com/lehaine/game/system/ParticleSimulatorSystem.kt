@@ -1,8 +1,8 @@
 package com.lehaine.game.system
 
 import com.github.quillraven.fleks.IntervalSystem
-import com.lehaine.littlekt.graphics.g2d.ParticleSimulator
-import com.lehaine.littlekt.util.seconds
+import com.littlekt.graphics.g2d.ParticleSimulator
+import com.littlekt.util.seconds
 
 /**
  * @author Colton Daily

@@ -5,13 +5,13 @@ import com.github.quillraven.fleks.World
 import com.lehaine.game.component.RenderLayer
 import com.lehaine.game.component.RenderLayerComponent
 import com.lehaine.littlekt.extras.ecs.component.ParticlesComponent
-import com.lehaine.littlekt.graphics.Color
-import com.lehaine.littlekt.graphics.g2d.ParticleSimulator
-import com.lehaine.littlekt.graphics.g2d.TextureSlice
-import com.lehaine.littlekt.graphics.toFloatBits
-import com.lehaine.littlekt.graphics.util.BlendMode
-import com.lehaine.littlekt.math.random
-import com.lehaine.littlekt.util.seconds
+import com.littlekt.graphics.Color
+import com.littlekt.graphics.g2d.ParticleSimulator
+import com.littlekt.graphics.g2d.TextureSlice
+import com.littlekt.graphics.toFloatBits
+import com.littlekt.graphics.webgpu.BlendState
+import com.littlekt.math.random
+import com.littlekt.util.seconds
 
 /**
  * @author Colton Daily
@@ -20,7 +20,7 @@ import com.lehaine.littlekt.util.seconds
 class Fx(private val world: World, private val particleSimulator: ParticleSimulator) {
     private val bgAdd: Entity = world.entity {
         it += ParticlesComponent().apply {
-            blendMode = BlendMode.Add
+            blendMode = BlendState.Add
         }
         it += RenderLayerComponent(RenderLayer.BACKGROUND)
     }
@@ -31,7 +31,7 @@ class Fx(private val world: World, private val particleSimulator: ParticleSimula
 
     private val topAdd: Entity = world.entity {
         it += ParticlesComponent().apply {
-            blendMode = BlendMode.Add
+            blendMode = BlendState.Add
         }
         it += RenderLayerComponent(RenderLayer.FOREGROUND)
     }

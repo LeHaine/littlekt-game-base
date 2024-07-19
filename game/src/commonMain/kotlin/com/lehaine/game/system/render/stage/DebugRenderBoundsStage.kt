@@ -8,9 +8,10 @@ import com.lehaine.game.event.ToggleDebug
 import com.lehaine.game.system.render.RenderIteratingStage
 import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
 import com.lehaine.littlekt.extras.ecs.event.EventBus
-import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
-import com.lehaine.littlekt.graphics.toFloatBits
-import com.lehaine.littlekt.math.Rect
+import com.littlekt.graphics.g2d.shape.ShapeRenderer
+import com.littlekt.graphics.webgpu.CommandEncoder
+import com.littlekt.graphics.webgpu.RenderPassDescriptor
+import com.littlekt.math.Rect
 
 /**
  * @author Colton Daily
@@ -31,9 +32,9 @@ class DebugRenderBoundsStage(
         eventBus.register<ToggleDebug> { debug = !debug }
     }
 
-    override fun render() {
+    override fun render(commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
         if (debug) {
-            super.render()
+            super.render(commandEncoder, renderPassDescriptor)
         }
     }
 
@@ -42,7 +43,7 @@ class DebugRenderBoundsStage(
         val debugColor = entity[DebugRenderBoundsComponent].color
 
         if (viewBounds.intersects(renderBounds)) {
-            shapeRenderer.rectangle(renderBounds, color = debugColor.toFloatBits())
+            shapeRenderer.rectangle(renderBounds, color = debugColor)
         }
     }
 }

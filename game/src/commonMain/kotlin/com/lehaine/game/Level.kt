@@ -1,12 +1,14 @@
 package com.lehaine.game
 
 import com.lehaine.littlekt.extras.GameLevel
-import com.lehaine.littlekt.graphics.g2d.tilemap.ldtk.LDtkIntGridLayer
-import com.lehaine.littlekt.graphics.g2d.tilemap.ldtk.LDtkLevel
-import com.lehaine.littlekt.math.clamp
+import com.littlekt.graphics.g2d.tilemap.ldtk.LDtkIntGridLayer
+import com.littlekt.graphics.g2d.tilemap.ldtk.LDtkLevel
+import com.littlekt.math.clamp
 
 class Level(ldtkLevel: LDtkLevel) : GameLevel<Level.LevelMark> {
     override var gridSize: Int = Config.GRID_CELL_SIZE
+    override val width: Int = ldtkLevel.pxWidth
+    override val height: Int = ldtkLevel.pxHeight
 
     private val marks = mutableMapOf<LevelMark, MutableMap<Int, Int>>()
 

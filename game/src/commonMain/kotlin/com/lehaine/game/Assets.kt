@@ -1,17 +1,17 @@
 package com.lehaine.game
 
-import com.lehaine.littlekt.AssetProvider
-import com.lehaine.littlekt.BitmapFontAssetParameter
-import com.lehaine.littlekt.Context
-import com.lehaine.littlekt.Disposable
-import com.lehaine.littlekt.graphics.g2d.TextureAtlas
-import com.lehaine.littlekt.graphics.g2d.font.BitmapFont
+import com.littlekt.AssetProvider
+import com.littlekt.BitmapFontAssetParameter
+import com.littlekt.Context
+import com.littlekt.Releasable
+import com.littlekt.graphics.g2d.TextureAtlas
+import com.littlekt.graphics.g2d.font.BitmapFont
+import kotlin.concurrent.Volatile
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.jvm.Volatile
 
-class Assets private constructor(context: Context) : Disposable {
+class Assets private constructor(context: Context) : Releasable {
     private val provider = AssetProvider(context)
     private val atlas: TextureAtlas by provider.load(context.resourcesVfs["tiles.atlas.json"])
     private val pixelFont: BitmapFont by provider.prepare {
@@ -21,9 +21,9 @@ class Assets private constructor(context: Context) : Disposable {
         ).content
     }
 
-    override fun dispose() {
-        atlas.dispose()
-        pixelFont.dispose()
+    override fun release() {
+        atlas.release()
+        pixelFont.release()
     }
 
     companion object {
@@ -42,12 +42,12 @@ class Assets private constructor(context: Context) : Disposable {
             val newInstance = Assets(context)
             instance = newInstance
             INSTANCE.provider.onFullyLoaded = onLoad
-            context.onRender { INSTANCE.provider.update() }
+            context.onUpdate { INSTANCE.provider.update() }
             return newInstance
         }
 
         fun dispose() {
-            instance?.dispose()
+            instance?.release()
         }
     }
 }

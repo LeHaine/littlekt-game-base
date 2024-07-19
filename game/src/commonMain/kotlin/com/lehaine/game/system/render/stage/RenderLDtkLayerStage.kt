@@ -7,8 +7,8 @@ import com.github.quillraven.fleks.World.Companion.family
 import com.github.quillraven.fleks.collection.compareEntityBy
 import com.lehaine.game.component.LDtkLayerComponent
 import com.lehaine.game.system.render.RenderIteratingStage
-import com.lehaine.littlekt.graphics.g2d.Batch
-import com.lehaine.littlekt.math.Rect
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.math.Rect
 
 /**
  * @author Colton Daily

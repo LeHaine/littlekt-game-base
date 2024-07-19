@@ -1,16 +1,17 @@
 package com.lehaine.game.system
 
 import com.github.quillraven.fleks.IntervalSystem
+import com.github.quillraven.fleks.collection.bag
 import com.lehaine.game.system.render.RenderStage
-import com.lehaine.littlekt.Context
-import com.lehaine.littlekt.Graphics
-import com.lehaine.littlekt.graphics.GL
-import com.lehaine.littlekt.graphics.gl.ClearBufferMask
-import com.lehaine.littlekt.graphics.gl.State
-import com.lehaine.littlekt.math.Rect
-import com.lehaine.littlekt.util.calculateViewBounds
-import com.lehaine.littlekt.util.fastForEach
-import com.lehaine.littlekt.util.viewport.Viewport
+import com.littlekt.Context
+import com.littlekt.Graphics
+import com.littlekt.graphics.Color
+import com.littlekt.graphics.webgpu.*
+import com.littlekt.log.Logger
+import com.littlekt.math.Rect
+import com.littlekt.util.calculateViewBounds
+import com.littlekt.util.datastructure.fastForEach
+import com.littlekt.util.viewport.Viewport
 
 /**
  * @author Colton Daily
@@ -23,22 +24,67 @@ class RenderSystem(
     private val stages: List<RenderStage>
 ) : IntervalSystem() {
 
-    private val gl: GL get() = context.gl
-    private val graphics: Graphics get() = context.graphics
+    private val graphics: Graphics = context.graphics
+    private val device = graphics.device
+    private val preferredFormat = graphics.preferredFormat
 
     override fun onTick() {
-        gl.enable(State.SCISSOR_TEST)
-        gl.scissor(0, 0, graphics.width, graphics.height)
-        gl.clearColor(0.1f, 0.1f, 0.1f, 1f)
-        gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+        val surfaceTexture = graphics.surface.getCurrentTexture()
+        when (val status = surfaceTexture.status) {
+            TextureStatus.SUCCESS -> {
+                // all good, could check for `surfaceTexture.suboptimal` here.
+            }
 
-        viewport.apply(context)
+            TextureStatus.TIMEOUT,
+            TextureStatus.OUTDATED,
+            TextureStatus.LOST -> {
+                surfaceTexture.texture?.release()
+                logger.info { "getCurrentTexture status=$status" }
+                return
+            }
+
+            else -> {
+                // fatal
+                logger.fatal { "getCurrentTexture status=$status" }
+                context.close()
+                return
+            }
+        }
+        val swapChainTexture = checkNotNull(surfaceTexture.texture)
+        val frame = swapChainTexture.createView()
+
+        val commandEncoder = device.createCommandEncoder()
+        val frameDescriptor = RenderPassDescriptor(
+            listOf(
+                RenderPassColorAttachmentDescriptor(
+                    view = frame,
+                    loadOp = LoadOp.CLEAR,
+                    storeOp = StoreOp.STORE,
+                    clearColor =
+                    if (preferredFormat.srgb) Color.DARK_GRAY.toLinear()
+                    else Color.DARK_GRAY
+                )
+            )
+        )
+        viewport.apply()
         viewBounds.calculateViewBounds(viewport.camera)
 
         stages.fastForEach {
-            it.render()
+            it.render(commandEncoder, frameDescriptor)
         }
 
-        gl.disable(State.SCISSOR_TEST)
+        val commandBuffer = commandEncoder.finish()
+
+        device.queue.submit(commandBuffer)
+        graphics.surface.present()
+
+        commandBuffer.release()
+        commandEncoder.release()
+        frame.release()
+        swapChainTexture.release()
+    }
+
+    companion object {
+        private val logger = Logger<RenderSystem>()
     }
 }

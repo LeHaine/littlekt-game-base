@@ -2,18 +2,19 @@ package com.lehaine.game.scene
 
 import com.lehaine.game.Assets
 import com.lehaine.game.GameCore
-import com.lehaine.littlekt.Context
 import com.lehaine.littlekt.extras.FixedScene
-import com.lehaine.littlekt.graph.node.resource.HAlign
-import com.lehaine.littlekt.graph.node.ui.button
-import com.lehaine.littlekt.graph.node.ui.centerContainer
-import com.lehaine.littlekt.graph.node.ui.column
-import com.lehaine.littlekt.graph.node.ui.label
-import com.lehaine.littlekt.graph.sceneGraph
-import com.lehaine.littlekt.graphics.g2d.Batch
-import com.lehaine.littlekt.graphics.g2d.shape.ShapeRenderer
-import com.lehaine.littlekt.graphics.gl.ClearBufferMask
-import com.lehaine.littlekt.util.viewport.ExtendViewport
+import com.littlekt.Context
+import com.littlekt.graph.node.ui.button
+import com.littlekt.graph.node.ui.centerContainer
+import com.littlekt.graph.node.ui.column
+import com.littlekt.graph.node.ui.label
+import com.littlekt.graph.sceneGraph
+import com.littlekt.graphics.Color
+import com.littlekt.graphics.HAlign
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.graphics.g2d.shape.ShapeRenderer
+import com.littlekt.graphics.webgpu.*
+import com.littlekt.util.viewport.ExtendViewport
 import kotlin.time.Duration
 
 /**
@@ -33,7 +34,7 @@ class MainMenuScene(context: Context, val batch: Batch, val shapeRenderer: Shape
         ) {
             centerContainer {
                 anchorRight = 1f
-                anchorBottom = 1f
+                anchorTop = 1f
                 column {
                     separation = 10
 
@@ -90,12 +91,59 @@ class MainMenuScene(context: Context, val batch: Batch, val shapeRenderer: Shape
         graph.resize(width, height, true)
     }
 
-    override fun Context.render(dt: Duration) {
-        gl.clearColor(0.1f, 0.1f, 0.1f, 1f)
-        gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+    override fun Context.update(dt: Duration) {
+        val surfaceTexture = graphics.surface.getCurrentTexture()
+        when (val status = surfaceTexture.status) {
+            TextureStatus.SUCCESS -> {
+                // all good, could check for `surfaceTexture.suboptimal` here.
+            }
 
+            TextureStatus.TIMEOUT,
+            TextureStatus.OUTDATED,
+            TextureStatus.LOST -> {
+                surfaceTexture.texture?.release()
+                logger.info { "getCurrentTexture status=$status" }
+                return
+            }
+
+            else -> {
+                // fatal
+                logger.fatal { "getCurrentTexture status=$status" }
+                close()
+                return
+            }
+        }
+        val swapChainTexture = checkNotNull(surfaceTexture.texture)
+        val frame = swapChainTexture.createView()
+
+        val commandEncoder = graphics.device.createCommandEncoder("scenegraph command encoder")
+        val renderPassDescriptor =
+            RenderPassDescriptor(
+                listOf(
+                    RenderPassColorAttachmentDescriptor(
+                        view = frame,
+                        loadOp = LoadOp.CLEAR,
+                        storeOp = StoreOp.STORE,
+                        clearColor =
+                        if (graphics.preferredFormat.srgb) Color.DARK_GRAY.toLinear()
+                        else Color.DARK_GRAY
+                    )
+                ),
+                label = "Main Menu Scene Pass"
+            )
         graph.update(dt)
-        graph.render()
+        graph.render(commandEncoder, renderPassDescriptor)
+        if (batch.drawing) batch.end()
+
+        val commandBuffer = commandEncoder.finish()
+
+        graphics.device.queue.submit(commandBuffer)
+        graphics.surface.present()
+
+        commandBuffer.release()
+        commandEncoder.release()
+        frame.release()
+        swapChainTexture.release()
     }
 
     override suspend fun Context.hide() {
@@ -104,7 +152,7 @@ class MainMenuScene(context: Context, val batch: Batch, val shapeRenderer: Shape
         launching = false
     }
 
-    override fun Context.dispose() {
-        graph.dispose()
+    override fun Context.release() {
+        graph.release()
     }
 }

@@ -2,6 +2,8 @@ package com.lehaine.game.system.render
 
 import com.github.quillraven.fleks.*
 import com.github.quillraven.fleks.collection.EntityComparator
+import com.littlekt.graphics.webgpu.CommandEncoder
+import com.littlekt.graphics.webgpu.RenderPassDescriptor
 
 /**
  * @author Colton Daily
@@ -22,7 +24,7 @@ abstract class RenderIteratingStage(
      */
     var doSort = sortingType == Automatic && comparator != EMPTY_COMPARATOR
 
-    override fun render() {
+    override fun render(commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
         if (doSort) {
             doSort = sortingType == Automatic
             family.sort(comparator)
@@ -37,8 +39,6 @@ abstract class RenderIteratingStage(
     abstract fun EntityComponentContext.onRenderEntity(entity: Entity)
 
     companion object {
-        private val EMPTY_COMPARATOR = object : EntityComparator {
-            override fun compare(entityA: Entity, entityB: Entity): Int = 0
-        }
+        private val EMPTY_COMPARATOR = EntityComparator { _, _ -> 0 }
     }
 }

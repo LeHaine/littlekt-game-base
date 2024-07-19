@@ -3,14 +3,14 @@ package com.lehaine.game
 import com.lehaine.littlekt.extras.Cooldown
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.graphics.PixelSmoothCamera
-import com.lehaine.littlekt.math.MutableVec2f
-import com.lehaine.littlekt.math.Rect
-import com.lehaine.littlekt.math.clamp
-import com.lehaine.littlekt.math.floor
-import com.lehaine.littlekt.math.geom.Angle
-import com.lehaine.littlekt.math.geom.cosine
-import com.lehaine.littlekt.math.geom.radians
-import com.lehaine.littlekt.math.geom.sine
+import com.littlekt.math.MutableVec2f
+import com.littlekt.math.Rect
+import com.littlekt.math.clamp
+import com.littlekt.math.floor
+import com.littlekt.math.geom.Angle
+import com.littlekt.math.geom.cosine
+import com.littlekt.math.geom.radians
+import com.littlekt.math.geom.sine
 import kotlin.math.*
 import kotlin.time.Duration
 

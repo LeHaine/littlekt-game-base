@@ -11,9 +11,9 @@ import com.lehaine.game.system.DebugDroneMoveSystem
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.ecs.component.MoveComponent
 import com.lehaine.littlekt.extras.ecs.component.SpriteComponent
-import com.lehaine.littlekt.graphics.Color
-import com.lehaine.littlekt.graphics.g2d.TextureSlice
-import com.lehaine.littlekt.input.Input
+import com.littlekt.graphics.Color
+import com.littlekt.graphics.g2d.TextureSlice
+import com.littlekt.input.Input
 
 fun SystemConfiguration.addDroneSystems(input: Input) {
     add(DebugDroneInputSystem(input))

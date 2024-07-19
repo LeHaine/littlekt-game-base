@@ -5,8 +5,8 @@ import com.github.quillraven.fleks.IteratingSystem
 import com.github.quillraven.fleks.World.Companion.family
 import com.lehaine.game.component.DebugDroneComponent
 import com.lehaine.littlekt.extras.ecs.component.MoveComponent
-import com.lehaine.littlekt.input.Input
-import com.lehaine.littlekt.input.Key
+import com.littlekt.input.Input
+import com.littlekt.input.Key
 
 /**
  * @author Colton Daily
@@ -22,10 +22,10 @@ class DebugDroneInputSystem(private val input: Input) :
         drone.yMoveStrength = 0f
 
         if (input.isKeyPressed(Key.W)) {
-            drone.yMoveStrength = -1f
+            drone.yMoveStrength = 1f
         }
         if (input.isKeyPressed(Key.S)) {
-            drone.yMoveStrength = 1f
+            drone.yMoveStrength = -1f
         }
         if (input.isKeyPressed(Key.A)) {
             drone.xMoveStrength = -1f

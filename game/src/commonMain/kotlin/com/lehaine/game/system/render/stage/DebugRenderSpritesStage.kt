@@ -11,9 +11,10 @@ import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
 import com.lehaine.littlekt.extras.ecs.component.SpriteComponent
 import com.lehaine.littlekt.extras.ecs.event.EventBus
-import com.lehaine.littlekt.graphics.g2d.Batch
-import com.lehaine.littlekt.graphics.toFloatBits
-import com.lehaine.littlekt.math.Rect
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.graphics.webgpu.CommandEncoder
+import com.littlekt.graphics.webgpu.RenderPassDescriptor
+import com.littlekt.math.Rect
 
 /**
  * @author Colton Daily
@@ -33,9 +34,9 @@ class DebugRenderSpritesStage(
         eventBus.register<ToggleDebug> { debug = !debug }
     }
 
-    override fun render() {
+    override fun render(commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
         if (debug) {
-            super.render()
+            super.render(commandEncoder, renderPassDescriptor)
         }
     }
 
@@ -47,21 +48,23 @@ class DebugRenderSpritesStage(
         val slice = sprite.slice
 
         if (slice != null) {
-            if (renderBounds == null || viewBounds.intersects(renderBounds.bounds)) batch.draw(
-                slice,
-                grid.x,
-                grid.y,
-                grid.anchorX * slice.originalWidth,
-                grid.anchorY * slice.originalHeight,
-                width = sprite.renderWidth,
-                height = sprite.renderHeight,
-                scaleX = grid.scaleX,
-                scaleY = grid.scaleY,
-                flipX = sprite.flipX,
-                flipY = sprite.flipY,
-                rotation = grid.rotation,
-                colorBits = sprite.color.toFloatBits()
-            )
+            if (renderBounds == null || viewBounds.intersects(renderBounds.bounds)) {
+                batch.draw(
+                    slice,
+                    grid.x,
+                    grid.y,
+                    grid.anchorX * slice.actualWidth,
+                    grid.anchorY * slice.actualHeight,
+                    width = sprite.renderWidth,
+                    height = sprite.renderHeight,
+                    scaleX = grid.scaleX,
+                    scaleY = grid.scaleY,
+                    flipX = sprite.flipX,
+                    flipY = sprite.flipY,
+                    rotation = grid.rotation,
+                    color = sprite.color
+                )
+            }
         }
     }
 }

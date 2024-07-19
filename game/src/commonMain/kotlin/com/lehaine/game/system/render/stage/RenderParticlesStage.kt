@@ -6,10 +6,9 @@ import com.github.quillraven.fleks.EntityComponentContext
 import com.github.quillraven.fleks.World
 import com.lehaine.game.system.render.RenderIteratingStage
 import com.lehaine.littlekt.extras.ecs.component.ParticlesComponent
-import com.lehaine.littlekt.graphics.g2d.Batch
-import com.lehaine.littlekt.graphics.toFloatBits
-import com.lehaine.littlekt.math.Rect
-import com.lehaine.littlekt.util.fastForEach
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.math.Rect
+import com.littlekt.util.datastructure.fastForEach
 
 /**
  * @author Colton Daily
@@ -26,7 +25,7 @@ class RenderParticlesStage(
 
         with(particlesComponent) {
             if (particles.isNotEmpty()) {
-                batch.setBlendFunction(blendMode)
+                batch.setBlendState(blendMode)
             }
             particles.fastForEach {
                 if (!it.visible || !it.alive) return@fastForEach
@@ -47,13 +46,13 @@ class RenderParticlesStage(
                         scaleX = it.scaleX * scaleX,
                         scaleY = it.scaleY * scaleY,
                         rotation = it.rotation + rotation,
-                        colorBits = it.color.toFloatBits()
+                        color = it.color
                     )
                 }
             }
 
             if (particles.isNotEmpty()) {
-                batch.setToPreviousBlendFunction()
+                batch.swapToPreviousBlendState()
             }
         }
     }

@@ -9,9 +9,8 @@ import com.lehaine.game.system.render.RenderIteratingStage
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
 import com.lehaine.littlekt.extras.ecs.component.SpriteComponent
-import com.lehaine.littlekt.graphics.g2d.Batch
-import com.lehaine.littlekt.graphics.toFloatBits
-import com.lehaine.littlekt.math.Rect
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.math.Rect
 
 /**
  * @author Colton Daily
@@ -38,8 +37,8 @@ class RenderSpritesStage(
                     slice,
                     grid.x,
                     grid.y,
-                    grid.anchorX * slice.originalWidth,
-                    grid.anchorY * slice.originalHeight,
+                    grid.anchorX * slice.actualWidth,
+                    grid.anchorY * slice.actualHeight,
                     width = sprite.renderWidth,
                     height = sprite.renderHeight,
                     scaleX = grid.scaleX,
@@ -47,7 +46,7 @@ class RenderSpritesStage(
                     flipX = sprite.flipX,
                     flipY = sprite.flipY,
                     rotation = grid.rotation,
-                    colorBits = sprite.color.toFloatBits()
+                    color = sprite.color
                 )
             }
         }

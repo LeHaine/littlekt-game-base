@@ -1,6 +1,6 @@
 package com.lehaine.game
 
-import com.lehaine.littlekt.graph.SceneGraph
+import com.littlekt.graph.SceneGraph
 
 enum class GameInput {
     UI_ACCEPT,

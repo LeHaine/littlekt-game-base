@@ -2,7 +2,7 @@ package com.lehaine.game.component
 
 import com.github.quillraven.fleks.Component
 import com.github.quillraven.fleks.ComponentType
-import com.lehaine.littlekt.graphics.Color
+import com.littlekt.graphics.Color
 
 /**
  * @author Colton Daily

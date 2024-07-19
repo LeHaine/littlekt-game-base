@@ -2,7 +2,7 @@ package com.lehaine.game.component
 
 import com.github.quillraven.fleks.Component
 import com.github.quillraven.fleks.ComponentType
-import com.lehaine.littlekt.graphics.g2d.tilemap.ldtk.LDtkLayer
+import com.littlekt.graphics.g2d.tilemap.ldtk.LDtkLayer
 
 /**
  * @author Colton Daily
