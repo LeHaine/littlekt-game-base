@@ -25,15 +25,15 @@ import com.lehaine.littlekt.extras.ecs.system.SpriteRenderBoundsCalculationSyste
 import com.lehaine.littlekt.extras.graphics.PixelSmoothRenderTarget
 import com.littlekt.Context
 import com.littlekt.file.ldtk.LDtkMapLoader
-import com.littlekt.graph.node.ui.Control
-import com.littlekt.graph.node.ui.column
-import com.littlekt.graph.node.ui.control
-import com.littlekt.graph.node.ui.label
+import com.littlekt.graph.SceneGraph
+import com.littlekt.graph.node.ui.*
 import com.littlekt.graph.sceneGraph
+import com.littlekt.graphics.VAlign
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.graphics.g2d.ParticleSimulator
 import com.littlekt.graphics.g2d.TextureSlice
 import com.littlekt.graphics.g2d.shape.ShapeRenderer
+import com.littlekt.graphics.g2d.tilemap.ldtk.LDtkWorld
 import com.littlekt.input.Key
 import com.littlekt.math.Rect
 import com.littlekt.util.datastructure.Pool
@@ -49,34 +49,35 @@ import kotlin.time.Duration
  */
 class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRenderer) : FixedScene(context) {
 
-    private val eventBus = EventBus()
+    private val eventBus: EventBus = EventBus()
 
-    private var sceneRenderTarget = PixelSmoothRenderTarget(
+    private var sceneRenderTarget: PixelSmoothRenderTarget = PixelSmoothRenderTarget(
         context.graphics.device, context.graphics.preferredFormat, context.graphics.width, context.graphics.height, 160
     )
-    private var sceneFboSlice = TextureSlice(
+    private var sceneFboSlice: TextureSlice = TextureSlice(
         sceneRenderTarget.target,
         0,
         sceneRenderTarget.height - sceneRenderTarget.pxHeight,
         sceneRenderTarget.pxWidth,
         sceneRenderTarget.pxHeight
     )
-    private val sceneCamera = GridEntityCamera().apply {
+    private val sceneCamera: GridEntityCamera = GridEntityCamera().apply {
         renderTarget = sceneRenderTarget
     }
-    private val sceneViewport = ScreenViewport(context.graphics.width, context.graphics.height, camera = sceneCamera)
-    private val screenViewport = ScreenViewport(context.graphics.width, context.graphics.height)
+    private val sceneViewport: ScreenViewport =
+        ScreenViewport(context.graphics.width, context.graphics.height, camera = sceneCamera)
+    private val screenViewport: ScreenViewport = ScreenViewport(context.graphics.width, context.graphics.height)
 
-    private val sceneCameraViewBounds = Rect()
+    private val sceneCameraViewBounds: Rect = Rect()
 
     private lateinit var renderSceneToRenderTargetStage: RenderSceneToRenderTargetStage
     private lateinit var renderSceneStage: RenderSceneStage
 
     private val ui: Control
-    private val graph = sceneGraph(
-        context,
-        ExtendViewport(960, 540),
-        batch,
+    private val graph: SceneGraph<GameInput> = sceneGraph(
+        context = context,
+        viewport = ExtendViewport(960, 540),
+        batch = batch,
         uiInputSignals = createUiGameInputSignals(),
         whitePixel = Assets.atlas.getByPrefix("fxPixel").slice
     ) {
@@ -85,33 +86,35 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
             anchorRight = 1f
             anchorTop = 1f
 
-            column {
+            paddedContainer {
                 anchor(Control.AnchorLayout.TOP_LEFT)
-                marginLeft = 10f
-                marginTop = 10f
-
-                label {
-                    font = Assets.pixelFont
-                    onUpdate += {
-                        text = "FPS: ${context.stats.fps.toInt()}"
+                padding(10)
+                column {
+                    label {
+                        font = Assets.pixelFont
+                        verticalAlign = VAlign.TOP
+                        onUpdate += {
+                            text = "FPS: ${context.stats.fps.toInt()}"
+                        }
                     }
-                }
 
-                label {
-                    font = Assets.pixelFont
-                    var debug = false
-                    eventBus.register<ToggleDebug> {
-                        debug = !debug
-                    }
-                    onUpdate += {
-                        text = "Debug mode: $debug ('K' to toggle)"
+                    label {
+                        font = Assets.pixelFont
+                        verticalAlign = VAlign.TOP
+                        var debug = false
+                        eventBus.register<ToggleDebug> {
+                            debug = !debug
+                        }
+                        onUpdate += {
+                            text = "Debug mode: $debug ('K' to toggle)"
+                        }
                     }
                 }
             }
 
         }
     }
-    private val particleSimulator = ParticleSimulator(2048)
+    private val particleSimulator: ParticleSimulator = ParticleSimulator(2048)
 
     val world: World = configureWorld {
         val gridCollisionPool = Pool { GridCollisionResultComponent(GridCollisionResultComponent.Axes.X, 0) }
@@ -146,13 +149,14 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 // render game
                 add(
                     RenderSystem(
+                        batch = batch,
                         context = context,
                         viewport = sceneViewport,
                         viewBounds = sceneCameraViewBounds,
                         stages = listOf(
                             renderSceneToRenderTargetStage,
                             renderSceneStage,
-                            RenderSceneGraphStage(batch, graph)
+                            RenderSceneGraphStage(graph)
                         )
                     )
                 )
@@ -161,9 +165,9 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     }
     val fx: Fx = Fx(world, particleSimulator)
 
-    val mapLoader by Assets.provider.load<LDtkMapLoader>(context.resourcesVfs["world.ldtk"])
-    val map by Assets.provider.prepare { mapLoader.loadMap(false) }
-    val level by Assets.provider.prepare { Level(map.levels[0]) }
+    val mapLoader: LDtkMapLoader by Assets.provider.load<LDtkMapLoader>(context.resourcesVfs["world.ldtk"])
+    val map: LDtkWorld by Assets.provider.prepare { mapLoader.loadMap(false) }
+    val level: Level by Assets.provider.prepare { Level(map.levels[0]) }
 
     init {
         Assets.provider.prepare(::initLevel)
@@ -171,28 +175,27 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
     private fun initRenderStages() {
         renderSceneToRenderTargetStage = RenderSceneToRenderTargetStage(
-            batch = batch, renderTarget = sceneRenderTarget.target, sceneViewport = sceneViewport, stages = listOf(
+            renderTarget = sceneRenderTarget.target, sceneViewport = sceneViewport, stages = listOf(
                 // background
-                RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Background),
-                RenderParticlesStage(batch, sceneCameraViewBounds, RenderLayerComponent.Background),
+                RenderLDtkLayerStage(sceneCameraViewBounds, RenderLayerComponent.Background),
+                RenderParticlesStage(sceneCameraViewBounds, RenderLayerComponent.Background),
 
                 // main
-                RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Main),
-                RenderSpritesStage(batch, sceneCameraViewBounds),
+                RenderLDtkLayerStage(sceneCameraViewBounds, RenderLayerComponent.Main),
+                RenderSpritesStage(sceneCameraViewBounds),
 
                 // foreground
-                RenderParticlesStage(batch, sceneCameraViewBounds, RenderLayerComponent.Foreground),
-                RenderLDtkLayerStage(batch, sceneCameraViewBounds, RenderLayerComponent.Foreground),
+                RenderParticlesStage(sceneCameraViewBounds, RenderLayerComponent.Foreground),
+                RenderLDtkLayerStage(sceneCameraViewBounds, RenderLayerComponent.Foreground),
 
                 // debug
-                DebugRenderSpritesStage(batch, sceneCameraViewBounds, eventBus),
+                DebugRenderSpritesStage(sceneCameraViewBounds, eventBus),
                 DebugRenderBoundsStage(shapeRenderer, sceneCameraViewBounds, eventBus)
             )
         )
 
         renderSceneStage = RenderSceneStage(
             context = context,
-            batch = batch,
             sceneRenderTarget = sceneRenderTarget,
             sceneRenderTargetSlice = sceneFboSlice,
             sceneCamera = sceneCamera,

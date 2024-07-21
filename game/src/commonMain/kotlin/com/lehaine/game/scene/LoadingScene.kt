@@ -94,5 +94,4 @@ class LoadingScene(context: Context, val batch: Batch) : FixedScene(context) {
     override fun Context.release() {
         graph.release()
     }
-
 }

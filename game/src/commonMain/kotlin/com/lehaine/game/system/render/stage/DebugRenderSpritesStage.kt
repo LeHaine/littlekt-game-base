@@ -21,7 +21,6 @@ import com.littlekt.math.Rect
  * @date 3/13/2023
  */
 class DebugRenderSpritesStage(
-    private val batch: Batch,
     private val viewBounds: Rect,
     eventBus: EventBus
 ) : RenderIteratingStage(family = family {
@@ -34,13 +33,13 @@ class DebugRenderSpritesStage(
         eventBus.register<ToggleDebug> { debug = !debug }
     }
 
-    override fun render(commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
+    override fun render(batch: Batch, commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
         if (debug) {
-            super.render(commandEncoder, renderPassDescriptor)
+            super.render(batch, commandEncoder, renderPassDescriptor)
         }
     }
 
-    override fun EntityComponentContext.onRenderEntity(entity: Entity) {
+    override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
         val sprite = entity[SpriteComponent]
         val grid = entity[GridComponent]
         val renderBounds = entity.getOrNull(RenderBoundsComponent)

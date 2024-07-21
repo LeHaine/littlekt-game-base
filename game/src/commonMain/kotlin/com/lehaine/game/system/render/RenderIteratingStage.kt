@@ -2,6 +2,7 @@ package com.lehaine.game.system.render
 
 import com.github.quillraven.fleks.*
 import com.github.quillraven.fleks.collection.EntityComparator
+import com.littlekt.graphics.g2d.Batch
 import com.littlekt.graphics.webgpu.CommandEncoder
 import com.littlekt.graphics.webgpu.RenderPassDescriptor
 
@@ -24,19 +25,19 @@ abstract class RenderIteratingStage(
      */
     var doSort = sortingType == Automatic && comparator != EMPTY_COMPARATOR
 
-    override fun render(commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
+    override fun render(batch: Batch, commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
         if (doSort) {
             doSort = sortingType == Automatic
             family.sort(comparator)
         }
 
-        family.forEach { onRenderEntity(it) }
+        family.forEach { onRenderEntity(it, batch) }
     }
 
     /**
      * Function that contains the update logic for each [entity][Entity] of the system.
      */
-    abstract fun EntityComponentContext.onRenderEntity(entity: Entity)
+    abstract fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch)
 
     companion object {
         private val EMPTY_COMPARATOR = EntityComparator { _, _ -> 0 }

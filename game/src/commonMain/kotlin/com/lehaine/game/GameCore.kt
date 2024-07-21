@@ -62,7 +62,7 @@ class GameCore(context: Context) : FixedGame<FixedScene>(context) {
         }
 
         onRelease {
-            Assets.dispose()
+            Assets.release()
         }
     }
 }

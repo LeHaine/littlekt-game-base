@@ -1,11 +1,12 @@
 package com.lehaine.game.system
 
 import com.github.quillraven.fleks.IntervalSystem
-import com.github.quillraven.fleks.collection.bag
 import com.lehaine.game.system.render.RenderStage
 import com.littlekt.Context
 import com.littlekt.Graphics
 import com.littlekt.graphics.Color
+import com.littlekt.graphics.g2d.Batch
+import com.littlekt.graphics.g2d.use
 import com.littlekt.graphics.webgpu.*
 import com.littlekt.log.Logger
 import com.littlekt.math.Rect
@@ -18,6 +19,7 @@ import com.littlekt.util.viewport.Viewport
  * @date 3/13/2023
  */
 class RenderSystem(
+    private val batch: Batch,
     private val context: Context,
     private val viewport: Viewport,
     private val viewBounds: Rect,
@@ -69,8 +71,10 @@ class RenderSystem(
         viewport.apply()
         viewBounds.calculateViewBounds(viewport.camera)
 
-        stages.fastForEach {
-            it.render(commandEncoder, frameDescriptor)
+        batch.use {
+            stages.fastForEach {
+                it.render(batch, commandEncoder, frameDescriptor)
+            }
         }
 
         val commandBuffer = commandEncoder.finish()

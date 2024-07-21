@@ -15,7 +15,6 @@ import com.littlekt.math.Rect
  * @date 3/13/2023
  */
 class RenderLDtkLayerStage(
-    private val batch: Batch,
     private val viewBounds: Rect,
     vararg extraTypes: ComponentType<*> = emptyArray()
 ) : RenderIteratingStage(
@@ -23,7 +22,7 @@ class RenderLDtkLayerStage(
     comparator = compareEntityBy(LDtkLayerComponent)
 ) {
 
-    override fun EntityComponentContext.onRenderEntity(entity: Entity) {
+    override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
         val layerComponent = entity[LDtkLayerComponent]
         layerComponent.layer.render(batch, viewBounds)
     }

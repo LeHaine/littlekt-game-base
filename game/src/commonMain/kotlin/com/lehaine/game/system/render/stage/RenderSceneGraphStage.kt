@@ -11,15 +11,14 @@ import com.littlekt.graphics.webgpu.RenderPassDescriptor
  * @author Colton Daily
  * @date 3/13/2023
  */
-class RenderSceneGraphStage(private val batch: Batch, private val graph: SceneGraph<*>) : RenderStage {
+class RenderSceneGraphStage(private val graph: SceneGraph<*>) : RenderStage {
 
-    override fun render(commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
+    override fun render(batch: Batch, commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
         batch.useDefaultShader()
         val uiRenderDesc = run {
             val colorAttachments = renderPassDescriptor.colorAttachments.map { it.copy(loadOp = LoadOp.LOAD) }
             renderPassDescriptor.copy(colorAttachments = colorAttachments, label = "Render Scene Graph Stage")
         }
         graph.render(commandEncoder, uiRenderDesc)
-        if (batch.drawing) batch.end()
     }
 }

@@ -46,7 +46,7 @@ class Assets private constructor(context: Context) : Releasable {
             return newInstance
         }
 
-        fun dispose() {
+        fun release() {
             instance?.release()
         }
     }

@@ -15,12 +15,11 @@ import com.littlekt.util.datastructure.fastForEach
  * @date 3/15/2023
  */
 class RenderParticlesStage(
-    private val batch: Batch,
     private val viewBounds: Rect,
     vararg extraTypes: ComponentType<*> = emptyArray()
 ) : RenderIteratingStage(World.family { all(ParticlesComponent, *extraTypes) }) {
 
-    override fun EntityComponentContext.onRenderEntity(entity: Entity) {
+    override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
         val particlesComponent = entity[ParticlesComponent]
 
         with(particlesComponent) {

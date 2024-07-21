@@ -16,15 +16,14 @@ import com.littlekt.math.Rect
  * @author Colton Daily
  * @date 3/13/2023
  */
-class RenderSpritesStage(
-    private val batch: Batch, private val viewBounds: Rect
+class RenderSpritesStage( private val viewBounds: Rect
 ) : RenderIteratingStage(family = family {
     all(GridComponent, SpriteComponent).none(
         DebugSpriteComponent
     )
 }, comparator = compareEntity { entA, entB -> entA[GridComponent].bottom.compareTo(entB[GridComponent].bottom) }) {
 
-    override fun EntityComponentContext.onRenderEntity(entity: Entity) {
+    override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
         val sprite = entity[SpriteComponent]
         val grid = entity[GridComponent]
         val renderBounds = entity.getOrNull(RenderBoundsComponent)
