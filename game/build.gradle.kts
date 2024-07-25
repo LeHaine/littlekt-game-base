@@ -10,7 +10,7 @@ repositories {
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.littlekt.gradle.texturepacker) apply false
+    alias(libs.plugins.littlekt.gradle.texturepacker)
 }
 
 littleKt {

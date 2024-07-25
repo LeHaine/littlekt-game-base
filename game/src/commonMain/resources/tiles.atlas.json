@@ -7,7 +7,7 @@
         "scale": 1.0,
         "size": {
             "w": 512,
-            "h": 256
+            "h": 128
         },
         "related_multi_packs": []
     },
@@ -15,8 +15,8 @@
         {
             "filename": "fxCircle0",
             "frame": {
-                "x": 429,
-                "y": 116,
+                "x": 312,
+                "y": 107,
                 "w": 16,
                 "h": 16
             },
@@ -36,8 +36,8 @@
         {
             "filename": "fxDot0",
             "frame": {
-                "x": 505,
-                "y": 40,
+                "x": 110,
+                "y": 121,
                 "w": 3,
                 "h": 3
             },
@@ -57,8 +57,8 @@
         {
             "filename": "fxGib0",
             "frame": {
-                "x": 504,
-                "y": 111,
+                "x": 80,
+                "y": 121,
                 "w": 4,
                 "h": 3
             },
@@ -78,8 +78,8 @@
         {
             "filename": "fxGib1",
             "frame": {
-                "x": 474,
-                "y": 113,
+                "x": 90,
+                "y": 121,
                 "w": 4,
                 "h": 3
             },
@@ -99,8 +99,8 @@
         {
             "filename": "fxGib2",
             "frame": {
-                "x": 4,
-                "y": 249,
+                "x": 100,
+                "y": 121,
                 "w": 4,
                 "h": 3
             },
@@ -120,8 +120,8 @@
         {
             "filename": "fxImpact0",
             "frame": {
-                "x": 4,
-                "y": 164,
+                "x": 43,
+                "y": 102,
                 "w": 14,
                 "h": 9
             },
@@ -183,8 +183,8 @@
         {
             "filename": "fxPixel0",
             "frame": {
-                "x": 498,
-                "y": 40,
+                "x": 63,
+                "y": 114,
                 "w": 1,
                 "h": 1
             },
@@ -204,8 +204,8 @@
         {
             "filename": "fxSmallCircle0",
             "frame": {
-                "x": 24,
-                "y": 163,
+                "x": 63,
+                "y": 102,
                 "w": 6,
                 "h": 6
             },
@@ -267,8 +267,8 @@
         {
             "filename": "fxSwipe0",
             "frame": {
-                "x": 4,
-                "y": 128,
+                "x": 312,
+                "y": 72,
                 "w": 26,
                 "h": 29
             },
@@ -288,8 +288,8 @@
         {
             "filename": "fxSwipe1",
             "frame": {
-                "x": 4,
-                "y": 181,
+                "x": 331,
+                "y": 4,
                 "w": 26,
                 "h": 28
             },
@@ -309,8 +309,8 @@
         {
             "filename": "fxSwipe2",
             "frame": {
-                "x": 4,
-                "y": 215,
+                "x": 331,
+                "y": 38,
                 "w": 26,
                 "h": 28
             },
@@ -346,972 +346,6 @@
             "sourceSize": {
                 "w": 33,
                 "h": 11
-            }
-        },
-        {
-            "filename": "heroClimb0",
-            "frame": {
-                "x": 484,
-                "y": 76,
-                "w": 15,
-                "h": 29
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 16,
-                "y": 19,
-                "w": 15,
-                "h": 29
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroClimb1",
-            "frame": {
-                "x": 61,
-                "y": 130,
-                "w": 18,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 14,
-                "y": 16,
-                "w": 18,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroClimb2",
-            "frame": {
-                "x": 484,
-                "y": 111,
-                "w": 14,
-                "h": 29
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 17,
-                "y": 19,
-                "w": 14,
-                "h": 29
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroClimb3",
-            "frame": {
-                "x": 63,
-                "y": 181,
-                "w": 18,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 14,
-                "y": 15,
-                "w": 18,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle0",
-            "frame": {
-                "x": 437,
-                "y": 41,
-                "w": 20,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 18,
-                "w": 20,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle1",
-            "frame": {
-                "x": 36,
-                "y": 181,
-                "w": 21,
-                "h": 28
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 20,
-                "w": 21,
-                "h": 28
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle2",
-            "frame": {
-                "x": 63,
-                "y": 214,
-                "w": 21,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 21,
-                "w": 21,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle3",
-            "frame": {
-                "x": 87,
-                "y": 181,
-                "w": 21,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 21,
-                "w": 21,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle4",
-            "frame": {
-                "x": 87,
-                "y": 181,
-                "w": 21,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 21,
-                "w": 21,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle5",
-            "frame": {
-                "x": 36,
-                "y": 215,
-                "w": 21,
-                "h": 28
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 20,
-                "w": 21,
-                "h": 28
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle6",
-            "frame": {
-                "x": 437,
-                "y": 41,
-                "w": 20,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 18,
-                "w": 20,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle7",
-            "frame": {
-                "x": 411,
-                "y": 42,
-                "w": 20,
-                "h": 31
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 17,
-                "w": 20,
-                "h": 31
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle8",
-            "frame": {
-                "x": 411,
-                "y": 42,
-                "w": 20,
-                "h": 31
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 17,
-                "w": 20,
-                "h": 31
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroIdle9",
-            "frame": {
-                "x": 411,
-                "y": 42,
-                "w": 20,
-                "h": 31
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 17,
-                "w": 20,
-                "h": 31
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroJumpFall0",
-            "frame": {
-                "x": 363,
-                "y": 4,
-                "w": 24,
-                "h": 34
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 10,
-                "y": 13,
-                "w": 24,
-                "h": 34
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroJumpMaxHeight0",
-            "frame": {
-                "x": 331,
-                "y": 4,
-                "w": 26,
-                "h": 36
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 7,
-                "y": 12,
-                "w": 26,
-                "h": 36
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroJumpUp0",
-            "frame": {
-                "x": 356,
-                "y": 46,
-                "w": 22,
-                "h": 35
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 10,
-                "y": 13,
-                "w": 22,
-                "h": 35
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand0",
-            "frame": {
-                "x": 85,
-                "y": 128,
-                "w": 22,
-                "h": 19
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 29,
-                "w": 22,
-                "h": 19
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand1",
-            "frame": {
-                "x": 116,
-                "y": 153,
-                "w": 22,
-                "h": 22
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 26,
-                "w": 22,
-                "h": 22
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand2",
-            "frame": {
-                "x": 116,
-                "y": 153,
-                "w": 22,
-                "h": 22
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 26,
-                "w": 22,
-                "h": 22
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand3",
-            "frame": {
-                "x": 90,
-                "y": 214,
-                "w": 21,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 21,
-                "w": 21,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand4",
-            "frame": {
-                "x": 90,
-                "y": 214,
-                "w": 21,
-                "h": 27
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 21,
-                "w": 21,
-                "h": 27
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand5",
-            "frame": {
-                "x": 36,
-                "y": 215,
-                "w": 21,
-                "h": 28
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 20,
-                "w": 21,
-                "h": 28
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand6",
-            "frame": {
-                "x": 36,
-                "y": 215,
-                "w": 21,
-                "h": 28
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 20,
-                "w": 21,
-                "h": 28
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand7",
-            "frame": {
-                "x": 437,
-                "y": 41,
-                "w": 20,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 18,
-                "w": 20,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLand8",
-            "frame": {
-                "x": 437,
-                "y": 41,
-                "w": 20,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 18,
-                "w": 20,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLedgeClimb0",
-            "frame": {
-                "x": 384,
-                "y": 44,
-                "w": 21,
-                "h": 32
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 12,
-                "y": 16,
-                "w": 21,
-                "h": 32
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLedgeClimb1",
-            "frame": {
-                "x": 425,
-                "y": 4,
-                "w": 12,
-                "h": 31
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 21,
-                "y": 15,
-                "w": 12,
-                "h": 31
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLedgeClimb2",
-            "frame": {
-                "x": 429,
-                "y": 79,
-                "w": 17,
-                "h": 31
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 15,
-                "y": 14,
-                "w": 17,
-                "h": 31
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLedgeClimb3",
-            "frame": {
-                "x": 36,
-                "y": 130,
-                "w": 19,
-                "h": 28
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 16,
-                "y": 18,
-                "w": 19,
-                "h": 28
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroLedgeClimb4",
-            "frame": {
-                "x": 113,
-                "y": 125,
-                "w": 22,
-                "h": 21
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 24,
-                "w": 22,
-                "h": 21
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll0",
-            "frame": {
-                "x": 356,
-                "y": 87,
-                "w": 34,
-                "h": 25
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 8,
-                "y": 23,
-                "w": 34,
-                "h": 25
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll1",
-            "frame": {
-                "x": 312,
-                "y": 72,
-                "w": 38,
-                "h": 26
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 6,
-                "y": 22,
-                "w": 38,
-                "h": 26
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll2",
-            "frame": {
-                "x": 80,
-                "y": 102,
-                "w": 25,
-                "h": 20
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 10,
-                "y": 28,
-                "w": 25,
-                "h": 20
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll3",
-            "frame": {
-                "x": 312,
-                "y": 104,
-                "w": 35,
-                "h": 15
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 4,
-                "y": 33,
-                "w": 35,
-                "h": 15
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll4",
-            "frame": {
-                "x": 443,
-                "y": 4,
-                "w": 30,
-                "h": 26
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 7,
-                "y": 22,
-                "w": 30,
-                "h": 26
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll5",
-            "frame": {
-                "x": 114,
-                "y": 181,
-                "w": 22,
-                "h": 25
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 14,
-                "y": 23,
-                "w": 22,
-                "h": 25
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRoll6",
-            "frame": {
-                "x": 85,
-                "y": 153,
-                "w": 25,
-                "h": 22
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 13,
-                "y": 26,
-                "w": 25,
-                "h": 22
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun0",
-            "frame": {
-                "x": 393,
-                "y": 4,
-                "w": 26,
-                "h": 32
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 8,
-                "y": 16,
-                "w": 26,
-                "h": 32
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun1",
-            "frame": {
-                "x": 452,
-                "y": 113,
-                "w": 16,
-                "h": 29
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 17,
-                "y": 19,
-                "w": 16,
-                "h": 29
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun2",
-            "frame": {
-                "x": 479,
-                "y": 4,
-                "w": 26,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 9,
-                "y": 18,
-                "w": 26,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun3",
-            "frame": {
-                "x": 474,
-                "y": 146,
-                "w": 29,
-                "h": 29
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 9,
-                "y": 16,
-                "w": 29,
-                "h": 29
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun4",
-            "frame": {
-                "x": 396,
-                "y": 82,
-                "w": 27,
-                "h": 32
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 8,
-                "y": 16,
-                "w": 27,
-                "h": 32
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun5",
-            "frame": {
-                "x": 353,
-                "y": 118,
-                "w": 18,
-                "h": 29
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 15,
-                "y": 19,
-                "w": 18,
-                "h": 29
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun6",
-            "frame": {
-                "x": 452,
-                "y": 77,
-                "w": 26,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 10,
-                "y": 18,
-                "w": 26,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
-            }
-        },
-        {
-            "filename": "heroRun7",
-            "frame": {
-                "x": 463,
-                "y": 40,
-                "w": 29,
-                "h": 30
-            },
-            "rotated": false,
-            "trimmed": true,
-            "spriteSourceSize": {
-                "x": 8,
-                "y": 16,
-                "w": 29,
-                "h": 30
-            },
-            "sourceSize": {
-                "w": 48,
-                "h": 48
             }
         },
         {
