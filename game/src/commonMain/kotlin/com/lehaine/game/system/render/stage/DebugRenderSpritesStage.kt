@@ -5,7 +5,7 @@ import com.github.quillraven.fleks.EntityComponentContext
 import com.github.quillraven.fleks.World.Companion.family
 import com.github.quillraven.fleks.collection.compareEntity
 import com.lehaine.game.component.DebugSpriteComponent
-import com.lehaine.game.event.ToggleDebug
+import com.lehaine.game.event.GameEvent
 import com.lehaine.game.system.render.RenderIteratingStage
 import com.lehaine.littlekt.extras.ecs.component.GridComponent
 import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
@@ -30,7 +30,7 @@ class DebugRenderSpritesStage(
     private var debug = false
 
     init {
-        eventBus.register<ToggleDebug> { debug = !debug }
+        eventBus.register<GameEvent.ToggleDebug> { debug = !debug }
     }
 
     override fun render(batch: Batch, commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {

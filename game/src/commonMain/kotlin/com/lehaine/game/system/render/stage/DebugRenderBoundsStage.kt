@@ -4,7 +4,7 @@ import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.EntityComponentContext
 import com.github.quillraven.fleks.World.Companion.family
 import com.lehaine.game.component.DebugRenderBoundsComponent
-import com.lehaine.game.event.ToggleDebug
+import com.lehaine.game.event.GameEvent
 import com.lehaine.game.system.render.RenderIteratingStage
 import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
 import com.lehaine.littlekt.extras.ecs.event.EventBus
@@ -22,18 +22,22 @@ class DebugRenderBoundsStage(
     private val shapeRenderer: ShapeRenderer,
     private val viewBounds: Rect,
     eventBus: EventBus
-) : RenderIteratingStage(
-    family = family {
-        all(DebugRenderBoundsComponent, RenderBoundsComponent)
-    }) {
+) :
+    RenderIteratingStage(
+        family = family { all(DebugRenderBoundsComponent, RenderBoundsComponent) }
+    ) {
 
     private var debug = false
 
     init {
-        eventBus.register<ToggleDebug> { debug = !debug }
+        eventBus.register<GameEvent.ToggleDebug> { debug = !debug }
     }
 
-    override fun render(batch: Batch, commandEncoder: CommandEncoder, renderPassDescriptor: RenderPassDescriptor) {
+    override fun render(
+        batch: Batch,
+        commandEncoder: CommandEncoder,
+        renderPassDescriptor: RenderPassDescriptor
+    ) {
         if (debug) {
             super.render(batch, commandEncoder, renderPassDescriptor)
         }

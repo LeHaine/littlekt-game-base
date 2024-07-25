@@ -4,6 +4,7 @@ import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.Fixed
 import com.github.quillraven.fleks.IteratingSystem
 import com.github.quillraven.fleks.World.Companion.family
+import com.lehaine.game.Config
 import com.lehaine.game.component.DebugDroneComponent
 import com.lehaine.littlekt.extras.ecs.component.MoveComponent
 
@@ -12,7 +13,10 @@ import com.lehaine.littlekt.extras.ecs.component.MoveComponent
  * @date 3/11/2023
  */
 class DebugDroneMoveSystem :
-    IteratingSystem(family = family { all(MoveComponent, DebugDroneComponent) }, interval = Fixed(1 / 30f)) {
+    IteratingSystem(
+        family = family { all(MoveComponent, DebugDroneComponent) },
+        interval = Fixed(Config.FIXED_STEP_INTERVAL)
+    ) {
 
     override fun onTickEntity(entity: Entity) {
         val drone = entity[DebugDroneComponent]
