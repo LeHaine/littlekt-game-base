@@ -24,11 +24,11 @@ class Assets private constructor(context: Context) : Releasable {
         ).content
     }
 
-    private val heroIdle: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroIdle") }
-    private val heroRun: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroRun") }
-    private val heroJumpUp: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroJumpUp") }
-    private val heroJumpDown: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroJumpFall") }
-
+    // TODO load atlas animations
+//    private val heroIdle: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroIdle") }
+//    private val heroRun: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroRun") }
+//    private val heroJumpUp: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroJumpUp") }
+//    private val heroJumpDown: Animation<TextureSlice> by provider.prepare { atlas.getAnimation("heroJumpFall") }
 
     override fun release() {
         atlas.release()
@@ -44,10 +44,11 @@ class Assets private constructor(context: Context) : Releasable {
         val pixelFont: BitmapFont get() = INSTANCE.pixelFont
         val provider: AssetProvider get() = INSTANCE.provider
 
-        val heroIdle: Animation<TextureSlice> get() = INSTANCE.heroIdle
-        val heroRun: Animation<TextureSlice> get() = INSTANCE.heroRun
-        val heroJumpUp: Animation<TextureSlice> get() = INSTANCE.heroJumpUp
-        val heroJumpDown: Animation<TextureSlice> get() = INSTANCE.heroJumpDown
+        // TODO refer to INSTANCE animations
+//        val heroIdle: Animation<TextureSlice> get() = INSTANCE.heroIdle
+//        val heroRun: Animation<TextureSlice> get() = INSTANCE.heroRun
+//        val heroJumpUp: Animation<TextureSlice> get() = INSTANCE.heroJumpUp
+//        val heroJumpDown: Animation<TextureSlice> get() = INSTANCE.heroJumpDown
 
         @OptIn(ExperimentalContracts::class)
         fun createInstance(context: Context, onLoad: () -> Unit): Assets {
