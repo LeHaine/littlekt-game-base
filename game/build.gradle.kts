@@ -29,7 +29,7 @@ group = "com.lehaine.game"
 version = "1.0"
 
 kotlin {
-    tasks.withType<JavaExec> { jvmArgs("--enable-preview", "--enable-native-access=ALL-UNNAMED") }
+    tasks.withType<JavaExec> { jvmArgs( "--enable-native-access=ALL-UNNAMED") }
     applyDefaultHierarchyTemplate()
     jvm {
         compilations {
@@ -68,7 +68,7 @@ kotlin {
             }
         }
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_21
+            jvmTarget = JvmTarget.JVM_22
         }
         testRuns["test"].executionTask.configure {
             useJUnit()
