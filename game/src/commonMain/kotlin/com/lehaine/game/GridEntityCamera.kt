@@ -67,6 +67,11 @@ class GridEntityCamera : PixelSmoothCamera() {
 
     private val cd = Cooldown()
 
+    var subpixelX: Float = 0f
+        private set
+    var subpixelY: Float = 0f
+        private set
+
     var scaledDistX: Float = 0f
         private set
     var scaledDistY: Float = 0f
@@ -79,7 +84,7 @@ class GridEntityCamera : PixelSmoothCamera() {
         sync()
     }
 
-    fun updatePosition() {
+    private fun updatePosition() {
         val tz = targetZoom
         if (tz != zoom) {
             if (tz > zoom) {
@@ -154,7 +159,7 @@ class GridEntityCamera : PixelSmoothCamera() {
         bumpY *= bumpFrict.pow(tmod)
 
         if (clampToBounds) {
-            clampedFocus.x = if (trueViewBounds.width < width - offset.x * combinedZoom) {
+            clampedFocus.x = if (trueViewBounds.width < width - offset.x * 2f * combinedZoom) {
                 trueViewBounds.width * 0.5f
             } else {
                 rawFocus.x.clamp(
@@ -163,7 +168,7 @@ class GridEntityCamera : PixelSmoothCamera() {
                 )
             }
 
-            clampedFocus.y = if (trueViewBounds.height < height - offset.y * combinedZoom) {
+            clampedFocus.y = if (trueViewBounds.height < height - offset.y * 2f * combinedZoom) {
                 trueViewBounds.height * 0.5f
             } else {
                 rawFocus.y.clamp(
@@ -178,8 +183,8 @@ class GridEntityCamera : PixelSmoothCamera() {
     }
 
     private fun sync() {
-        var targetX = clampedFocus.x
-        var targetY = clampedFocus.y
+        var targetX = clampedFocus.x + offset.x * combinedZoom
+        var targetY = clampedFocus.y + offset.y * combinedZoom
         if (cd.has(SHAKE)) {
             targetX += cos(shakeFrames * 1.1f) * 2.5f * shakePower * cd.ratio(SHAKE)
             targetY += sin(0.3f + shakeFrames * 1.7f) * 2.5f * shakePower * cd.ratio(SHAKE)
@@ -190,11 +195,15 @@ class GridEntityCamera : PixelSmoothCamera() {
 
         val tx = (targetX * ppu).floor() / ppu
         val ty = (targetY * ppu).floor() / ppu
-        scaledDistX = (targetX - tx) * ppu
-        scaledDistY = (targetY - ty) * ppu
+        scaledDistX = (targetX - tx) * ppu * (renderTarget?.upscale ?: 1)
+        scaledDistY = (targetY - ty) * ppu * (renderTarget?.upscale ?: 1)
+        subpixelX = scaledDistX - scaledDistX.floor()
+        subpixelY = scaledDistY - scaledDistY.floor()
+        scaledDistX -= subpixelX
+        scaledDistY -= subpixelY
 
-        position.x = tx + offset.x * combinedZoom
-        position.y = ty + offset.y * combinedZoom
+        position.x = tx
+        position.y = ty
     }
 
     fun shake(time: Duration, power: Float = 1f) {

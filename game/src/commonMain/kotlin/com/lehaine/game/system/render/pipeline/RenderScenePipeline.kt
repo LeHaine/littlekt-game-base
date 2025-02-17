@@ -42,9 +42,10 @@ class RenderScenePipeline(
         batch.viewProjection = screenViewport.camera.viewProjection
         pixelSmoothShader.updateTextureSize(
             nextRenderTargetSlice.texture.width.toFloat(),
-            nextRenderTargetSlice.texture.height.toFloat()
+            nextRenderTargetSlice.texture.height.toFloat(),
+            sceneCamera.renderTarget?.upscale?.toFloat() ?: 1f
         )
-        pixelSmoothShader.updateSampleProperties(sceneCamera.scaledDistX, sceneCamera.scaledDistY)
+        pixelSmoothShader.updateSampleProperties(sceneCamera.subpixelX, sceneCamera.subpixelY, sceneCamera.scaledDistX, sceneCamera.scaledDistY)
         batch.draw(
             nextRenderTargetSlice,
             0f,
