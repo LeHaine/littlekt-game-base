@@ -14,6 +14,8 @@ object Config {
     const val GRID_CELL_SIZE: Int = 16
     const val GRID_CELL_SIZE_F: Float = GRID_CELL_SIZE.toFloat()
 
+    const val TARGET_HEIGHT: Int = 160
+
     var keyboardType = KeyboardType.QWERTY
 
     enum class KeyboardType {

@@ -3,8 +3,7 @@ package com.lehaine.game
 import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.World
 import com.lehaine.game.component.RenderLayer
-import com.lehaine.game.component.RenderLayerComponent
-import com.lehaine.littlekt.extras.ecs.component.ParticlesComponent
+import com.lehaine.littlekt.extras.ecs.component.Particles
 import com.littlekt.graphics.Color
 import com.littlekt.graphics.g2d.ParticleSimulator
 import com.littlekt.graphics.g2d.TextureSlice
@@ -19,25 +18,25 @@ import com.littlekt.util.seconds
  */
 class Fx(private val world: World, private val particleSimulator: ParticleSimulator) {
     private val bgAdd: Entity = world.entity {
-        it += ParticlesComponent().apply {
+        it += Particles().apply {
             blendMode = BlendState.Add
         }
-        it += RenderLayerComponent(RenderLayer.BACKGROUND)
+        it += RenderLayer.BACKGROUND
     }
     private val bgNormal: Entity = world.entity {
-        it += ParticlesComponent()
-        it += RenderLayerComponent(RenderLayer.BACKGROUND)
+        it += Particles()
+        it += RenderLayer.BACKGROUND
     }
 
     private val topAdd: Entity = world.entity {
-        it += ParticlesComponent().apply {
+        it += Particles().apply {
             blendMode = BlendState.Add
         }
-        it += RenderLayerComponent(RenderLayer.FOREGROUND)
+        it += RenderLayer.FOREGROUND
     }
     private val topNormal: Entity = world.entity {
-        it += ParticlesComponent()
-        it += RenderLayerComponent(RenderLayer.FOREGROUND)
+        it += Particles()
+        it += RenderLayer.FOREGROUND
     }
 
     fun runDust(x: Float, y: Float, dir: Int) {
@@ -53,16 +52,16 @@ class Fx(private val world: World, private val particleSimulator: ParticleSimula
     }
 
     private fun allocTopNormal(slice: TextureSlice, x: Float, y: Float) =
-        particleSimulator.alloc(slice, x, y).also { with(world) { topNormal[ParticlesComponent].add(it) } }
+        particleSimulator.alloc(slice, x, y).also { with(world) { topNormal[Particles].add(it) } }
 
     private fun allocTopAdd(slice: TextureSlice, x: Float, y: Float) =
-        particleSimulator.alloc(slice, x, y).also { with(world) { topAdd[ParticlesComponent].add(it) } }
+        particleSimulator.alloc(slice, x, y).also { with(world) { topAdd[Particles].add(it) } }
 
     private fun allocBogNormal(slice: TextureSlice, x: Float, y: Float) =
-        particleSimulator.alloc(slice, x, y).also { with(world) { bgNormal[ParticlesComponent].add(it) } }
+        particleSimulator.alloc(slice, x, y).also { with(world) { bgNormal[Particles].add(it) } }
 
     private fun allocBogAdd(slice: TextureSlice, x: Float, y: Float) =
-        particleSimulator.alloc(slice, x, y).also { with(world) { bgAdd[ParticlesComponent].add(it) } }
+        particleSimulator.alloc(slice, x, y).also { with(world) { bgAdd[Particles].add(it) } }
 
     private fun create(num: Int, createParticle: (index: Int) -> Unit) {
         for (i in 0 until num) {

@@ -5,9 +5,9 @@ import com.github.quillraven.fleks.IteratingSystem
 import com.github.quillraven.fleks.World.Companion.family
 import com.lehaine.game.ControllerOwner
 import com.lehaine.game.GameInput
-import com.lehaine.game.component.DebugDroneComponent
+import com.lehaine.game.component.DebugDrone
 import com.lehaine.game.event.GameEvent
-import com.lehaine.littlekt.extras.ecs.component.MoveComponent
+import com.lehaine.littlekt.extras.ecs.component.Move
 import com.lehaine.littlekt.extras.ecs.event.EventBus
 import com.littlekt.input.InputMapController
 
@@ -18,7 +18,7 @@ import com.littlekt.input.InputMapController
 class DebugDroneInputSystem(
     private val controller: InputMapController<GameInput>,
     eventBus: EventBus
-) : IteratingSystem(family { all(DebugDroneComponent, MoveComponent) }) {
+) : IteratingSystem(family { all(DebugDrone, Move) }) {
 
     private var ownsController = false
 
@@ -29,7 +29,7 @@ class DebugDroneInputSystem(
     }
 
     override fun onTickEntity(entity: Entity) {
-        val drone = entity[DebugDroneComponent]
+        val drone = entity[DebugDrone]
 
         drone.xMoveStrength = 0f
         drone.yMoveStrength = 0f

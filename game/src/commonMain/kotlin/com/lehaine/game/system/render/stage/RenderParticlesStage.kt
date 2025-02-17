@@ -1,11 +1,11 @@
 package com.lehaine.game.system.render.stage
 
-import com.github.quillraven.fleks.ComponentType
 import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.EntityComponentContext
+import com.github.quillraven.fleks.UniqueId
 import com.github.quillraven.fleks.World
 import com.lehaine.game.system.render.RenderIteratingStage
-import com.lehaine.littlekt.extras.ecs.component.ParticlesComponent
+import com.lehaine.littlekt.extras.ecs.component.Particles
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.math.Rect
 import com.littlekt.util.datastructure.fastForEach
@@ -16,11 +16,11 @@ import com.littlekt.util.datastructure.fastForEach
  */
 class RenderParticlesStage(
     private val viewBounds: Rect,
-    vararg extraTypes: ComponentType<*> = emptyArray()
-) : RenderIteratingStage(World.family { all(ParticlesComponent, *extraTypes) }) {
+    vararg extraTypes: UniqueId<*> = emptyArray()
+) : RenderIteratingStage(World.family { all(Particles, *extraTypes) }) {
 
     override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
-        val particlesComponent = entity[ParticlesComponent]
+        val particlesComponent = entity[Particles]
 
         with(particlesComponent) {
             if (particles.isNotEmpty()) {

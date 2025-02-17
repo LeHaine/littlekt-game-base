@@ -3,10 +3,10 @@ package com.lehaine.game.system.render.stage
 import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.EntityComponentContext
 import com.github.quillraven.fleks.World.Companion.family
-import com.lehaine.game.component.DebugRenderBoundsComponent
+import com.lehaine.game.component.DebugRenderBounds
 import com.lehaine.game.event.GameEvent
 import com.lehaine.game.system.render.RenderIteratingStage
-import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
+import com.lehaine.littlekt.extras.ecs.component.RenderBounds
 import com.lehaine.littlekt.extras.ecs.event.EventBus
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.graphics.g2d.shape.ShapeRenderer
@@ -24,7 +24,7 @@ class DebugRenderBoundsStage(
     eventBus: EventBus
 ) :
     RenderIteratingStage(
-        family = family { all(DebugRenderBoundsComponent, RenderBoundsComponent) }
+        family = family { all(DebugRenderBounds, RenderBounds) }
     ) {
 
     private var debug = false
@@ -44,8 +44,8 @@ class DebugRenderBoundsStage(
     }
 
     override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
-        val renderBounds = entity[RenderBoundsComponent].bounds
-        val debugColor = entity[DebugRenderBoundsComponent].color
+        val renderBounds = entity[RenderBounds].bounds
+        val debugColor = entity[DebugRenderBounds].color
 
         if (viewBounds.intersects(renderBounds)) {
             shapeRenderer.rectangle(renderBounds, color = debugColor)

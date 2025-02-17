@@ -7,7 +7,7 @@ import com.github.quillraven.fleks.ComponentType
  * @author Colton Daily
  * @date 7/23/2024
  */
-class HeroComponent : Component<HeroComponent> {
+class Hero : Component<Hero> {
     var speed = 0.06f
     var xMoveStrength = 0f
     var yMoveStrength = 0f
@@ -15,7 +15,7 @@ class HeroComponent : Component<HeroComponent> {
     var jumping = false
     var justJumped = false
 
-    override fun type() = HeroComponent
+    override fun type() = Hero
 
     data object Cooldowns {
         const val JUMP_EXTRA = "jumpExtra"
@@ -24,7 +24,7 @@ class HeroComponent : Component<HeroComponent> {
         const val STUNNED = "stunned"
     }
 
-    companion object : ComponentType<HeroComponent>()
+    companion object : ComponentType<Hero>()
 }
 
-typealias HeroCooldowns = HeroComponent.Cooldowns
+typealias HeroCooldowns = Hero.Cooldowns

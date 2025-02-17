@@ -5,13 +5,10 @@ import com.github.quillraven.fleks.Fixed
 import com.github.quillraven.fleks.IteratingSystem
 import com.github.quillraven.fleks.World.Companion.family
 import com.lehaine.game.Config
-import com.lehaine.game.component.HeroComponent
+import com.lehaine.game.component.Hero
 import com.lehaine.game.component.HeroCooldowns
 import com.lehaine.littlekt.extras.Cooldown
-import com.lehaine.littlekt.extras.ecs.component.CooldownComponent
-import com.lehaine.littlekt.extras.ecs.component.GridComponent
-import com.lehaine.littlekt.extras.ecs.component.MoveComponent
-import com.lehaine.littlekt.extras.ecs.component.PlatformerComponent
+import com.lehaine.littlekt.extras.ecs.component.*
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -20,16 +17,16 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class HeroMoveSystem :
     IteratingSystem(
-        family = family { all(MoveComponent, GridComponent, HeroComponent, PlatformerComponent) },
+        family = family { all(Move, Grid, Hero, Platformer) },
         interval = Fixed(Config.FIXED_STEP_INTERVAL)
     ) {
 
     override fun onTickEntity(entity: Entity) {
-        val hero = entity[HeroComponent]
-        val move = entity[MoveComponent]
+        val hero = entity[Hero]
+        val move = entity[Move]
         val cd = entity[CooldownComponent].cd
-        val platformer = entity[PlatformerComponent]
-        val grid = entity[GridComponent]
+        val platformer = entity[Platformer]
+        val grid = entity[Grid]
 
         move.velocityX += hero.speed * hero.xMoveStrength
 
@@ -44,9 +41,9 @@ class HeroMoveSystem :
 
     private fun handleJump(
         cd: Cooldown,
-        move: MoveComponent,
-        grid: GridComponent,
-        hero: HeroComponent
+        move: Move,
+        grid: Grid,
+        hero: Hero
     ) {
         val hasJumpForce = cd.has(HeroCooldowns.JUMP_FORCE)
         val hasJumpExtra = cd.has(HeroCooldowns.JUMP_EXTRA)

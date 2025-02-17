@@ -5,17 +5,16 @@ import com.github.quillraven.fleks.SystemConfiguration
 import com.github.quillraven.fleks.World
 import com.lehaine.game.Config
 import com.lehaine.game.GameInput
-import com.lehaine.game.component.DebugDroneComponent
-import com.lehaine.game.component.DebugSpriteComponent
+import com.lehaine.game.component.DebugDrone
+import com.lehaine.game.component.DebugSprite
 import com.lehaine.game.system.DebugDroneInputSystem
 import com.lehaine.game.system.DebugDroneMoveSystem
-import com.lehaine.littlekt.extras.ecs.component.GridComponent
-import com.lehaine.littlekt.extras.ecs.component.MoveComponent
-import com.lehaine.littlekt.extras.ecs.component.SpriteComponent
+import com.lehaine.littlekt.extras.ecs.component.Grid
+import com.lehaine.littlekt.extras.ecs.component.Move
+import com.lehaine.littlekt.extras.ecs.component.Sprite
 import com.lehaine.littlekt.extras.ecs.event.EventBus
 import com.littlekt.graphics.Color
 import com.littlekt.graphics.g2d.TextureSlice
-import com.littlekt.input.Input
 import com.littlekt.input.InputMapController
 
 fun SystemConfiguration.addDroneSystems(controller: InputMapController<GameInput>, eventBus: EventBus) {
@@ -24,13 +23,13 @@ fun SystemConfiguration.addDroneSystems(controller: InputMapController<GameInput
 }
 
 fun World.debugDrone(slice: TextureSlice): Entity = entity {
-    it += DebugDroneComponent()
-    it += MoveComponent()
-    it += SpriteComponent(slice).apply { color.set(Color.YELLOW) }
-    it += GridComponent(Config.GRID_CELL_SIZE_F).apply {
+    it += DebugDrone()
+    it += Move()
+    it += Sprite(slice).apply { color.set(Color.YELLOW) }
+    it += Grid(Config.GRID_CELL_SIZE_F).apply {
         scaleX = 10f
         scaleY = 10f
     }
-    it += DebugSpriteComponent()
+    it += DebugSprite
 }
 

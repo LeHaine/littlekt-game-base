@@ -5,7 +5,7 @@ import com.github.quillraven.fleks.IteratingSystem
 import com.github.quillraven.fleks.World.Companion.family
 import com.lehaine.game.ControllerOwner
 import com.lehaine.game.GameInput
-import com.lehaine.game.component.HeroComponent
+import com.lehaine.game.component.Hero
 import com.lehaine.game.component.HeroCooldowns
 import com.lehaine.game.event.GameEvent
 import com.lehaine.littlekt.extras.ecs.component.CooldownComponent
@@ -17,7 +17,7 @@ import com.littlekt.input.InputMapController
  * @date 7/23/2024
  */
 class HeroInputSystem(private val controller: InputMapController<GameInput>, eventBus: EventBus) :
-    IteratingSystem(family { all(HeroComponent, CooldownComponent) }) {
+    IteratingSystem(family { all(Hero, CooldownComponent) }) {
     private var ownsController = false
 
     init {
@@ -30,7 +30,7 @@ class HeroInputSystem(private val controller: InputMapController<GameInput>, eve
         val cd = entity[CooldownComponent].cd
         if (ownsController && !cd.has(HeroCooldowns.STUNNED)) {
             val movement = controller.vector(GameInput.MOVEMENT)
-            val hero = entity[HeroComponent]
+            val hero = entity[Hero]
 
             hero.xMoveStrength = movement.x
             hero.yMoveStrength = movement.y

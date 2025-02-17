@@ -1,18 +1,17 @@
 package com.lehaine.game.system
 
 import com.github.quillraven.fleks.IntervalSystem
-import com.lehaine.game.system.render.RenderStage
+import com.lehaine.game.system.render.RenderPipeline
 import com.littlekt.Context
 import com.littlekt.Graphics
 import com.littlekt.graphics.Color
 import com.littlekt.graphics.g2d.Batch
+import com.littlekt.graphics.g2d.TextureSlice
 import com.littlekt.graphics.g2d.use
 import com.littlekt.graphics.webgpu.*
 import com.littlekt.log.Logger
-import com.littlekt.math.Rect
-import com.littlekt.util.calculateViewBounds
 import com.littlekt.util.datastructure.fastForEach
-import com.littlekt.util.viewport.Viewport
+import com.littlekt.util.viewport.ScreenViewport
 
 /**
  * @author Colton Daily
@@ -21,14 +20,12 @@ import com.littlekt.util.viewport.Viewport
 class RenderSystem(
     private val batch: Batch,
     private val context: Context,
-    private val viewport: Viewport,
-    private val viewBounds: Rect,
-    private val stages: List<RenderStage>
+    private val pipelines: List<RenderPipeline>
 ) : IntervalSystem() {
 
+    private val viewport = ScreenViewport(context.graphics.width, context.graphics.height)
     private val graphics: Graphics = context.graphics
     private val device = graphics.device
-    private val preferredFormat = graphics.preferredFormat
 
     override fun onTick() {
         val surfaceTexture = graphics.surface.getCurrentTexture()
@@ -62,18 +59,27 @@ class RenderSystem(
                     view = frame,
                     loadOp = LoadOp.CLEAR,
                     storeOp = StoreOp.STORE,
-                    clearColor =
-                    if (preferredFormat.srgb) Color.DARK_GRAY.toLinear()
-                    else Color.DARK_GRAY
+                    clearColor = Color.BLACK
                 )
             )
         )
-        viewport.apply()
-        viewBounds.calculateViewBounds(viewport.camera)
+        var nextRenderTargetSlice: TextureSlice? = null
 
         batch.use {
-            stages.fastForEach {
-                it.render(batch, commandEncoder, frameDescriptor)
+            pipelines.fastForEach {
+                nextRenderTargetSlice = it.render(batch, commandEncoder, nextRenderTargetSlice)
+            }
+            nextRenderTargetSlice?.let { nextRenderTargetSlice ->
+                viewport.update(context.graphics.width, context.graphics.height, true)
+
+                val renderPassEncoder = commandEncoder.beginRenderPass(frameDescriptor)
+                batch.useDefaultShader()
+                renderPassEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height)
+                batch.viewProjection = viewport.camera.viewProjection
+                batch.draw(nextRenderTargetSlice, 0f, 0f)
+                batch.flush(renderPassEncoder)
+                renderPassEncoder.end()
+                renderPassEncoder.release()
             }
         }
 
@@ -86,6 +92,10 @@ class RenderSystem(
         commandEncoder.release()
         frame.release()
         swapChainTexture.release()
+    }
+
+    override fun onDispose() {
+        pipelines.fastForEach { it.release() }
     }
 
     companion object {

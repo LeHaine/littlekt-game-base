@@ -4,10 +4,9 @@ import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.SystemConfiguration
 import com.github.quillraven.fleks.World
 import com.lehaine.game.Assets
-import com.lehaine.game.Config
 import com.lehaine.game.GameInput
 import com.lehaine.game.Level
-import com.lehaine.game.component.HeroComponent
+import com.lehaine.game.component.Hero
 import com.lehaine.game.system.hero.HeroInputSystem
 import com.lehaine.game.system.hero.HeroMoveSystem
 import com.lehaine.game.system.hero.HeroSystem
@@ -29,10 +28,10 @@ fun SystemConfiguration.addHeroSystems(
 }
 
 fun World.hero(data: LDtkEntity, level: Level): Entity = entity { entity ->
-    val move = MoveComponent().also { entity += it }
+    val move = Move().also { entity += it }
     addSpriteBundle(entity)
-    entity[SpriteComponent].slice = Assets.atlas.getByPrefix("fxPixel").slice
-    entity[GridComponent].apply {
+    entity[Sprite].slice = Assets.atlas.getByPrefix("fxPixel").slice
+    entity[Grid].apply {
         setFromLevelEntity(data, level)
         height = gridCellSize
         // scales the sprite
@@ -40,9 +39,9 @@ fun World.hero(data: LDtkEntity, level: Level): Entity = entity { entity ->
         scaleY = gridCellSize
     }
 
-    entity += HeroComponent()
+    entity += Hero()
     entity += CooldownComponent()
-    val platformer = PlatformerComponent(LevelGroundChecker(level)).also { entity += it }
+    val platformer = Platformer(LevelGroundChecker(level)).also { entity += it }
     // TODO add animation component
 //    entity +=
 //        AnimationComponent().apply {
@@ -53,12 +52,12 @@ fun World.hero(data: LDtkEntity, level: Level): Entity = entity { entity ->
 //            }
 //            registerState(Assets.heroIdle, 0)
 //        }
-    entity += GravityComponent().apply { gravityY = -0.075f }
-    entity += GridCollisionComponent(LevelCollisionChecker(level))
-    entity += GridCollisionResolverComponent(PlatformerLevelCollisionResolver)
+    entity += Gravity().apply { gravityY = -0.075f }
+    entity += GridCollision(LevelCollisionChecker(level))
+    entity += GridCollisionResolver(PlatformerLevelCollisionResolver)
 }
 
-private fun GridComponent.setFromLevelEntity(data: LDtkEntity, level: Level) {
+private fun Grid.setFromLevelEntity(data: LDtkEntity, level: Level) {
     anchorX = data.pivotX
     anchorY = 1f - data.pivotY
     toGridPosition(

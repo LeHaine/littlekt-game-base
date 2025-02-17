@@ -4,11 +4,11 @@ import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.EntityComponentContext
 import com.github.quillraven.fleks.World.Companion.family
 import com.github.quillraven.fleks.collection.compareEntity
-import com.lehaine.game.component.DebugSpriteComponent
+import com.lehaine.game.component.DebugSprite
 import com.lehaine.game.system.render.RenderIteratingStage
-import com.lehaine.littlekt.extras.ecs.component.GridComponent
-import com.lehaine.littlekt.extras.ecs.component.RenderBoundsComponent
-import com.lehaine.littlekt.extras.ecs.component.SpriteComponent
+import com.lehaine.littlekt.extras.ecs.component.Grid
+import com.lehaine.littlekt.extras.ecs.component.RenderBounds
+import com.lehaine.littlekt.extras.ecs.component.Sprite
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.math.Rect
 
@@ -16,17 +16,16 @@ import com.littlekt.math.Rect
  * @author Colton Daily
  * @date 3/13/2023
  */
-class RenderSpritesStage( private val viewBounds: Rect
-) : RenderIteratingStage(family = family {
-    all(GridComponent, SpriteComponent).none(
-        DebugSpriteComponent
-    )
-}, comparator = compareEntity { entA, entB -> entA[GridComponent].bottom.compareTo(entB[GridComponent].bottom) }) {
+class RenderSpritesStage(private val viewBounds: Rect) : RenderIteratingStage(
+    family = family {
+        all(Grid, Sprite).none(DebugSprite)
+    },
+    comparator = compareEntity { entA, entB -> entA[Grid].bottom.compareTo(entB[Grid].bottom) }) {
 
     override fun EntityComponentContext.onRenderEntity(entity: Entity, batch: Batch) {
-        val sprite = entity[SpriteComponent]
-        val grid = entity[GridComponent]
-        val renderBounds = entity.getOrNull(RenderBoundsComponent)
+        val sprite = entity[Sprite]
+        val grid = entity[Grid]
+        val renderBounds = entity.getOrNull(RenderBounds)
 
         val slice = sprite.slice
 

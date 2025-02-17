@@ -3,6 +3,7 @@ package com.lehaine.game.system.render.stage
 import com.github.quillraven.fleks.ComponentType
 import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.EntityComponentContext
+import com.github.quillraven.fleks.UniqueId
 import com.github.quillraven.fleks.World.Companion.family
 import com.github.quillraven.fleks.collection.compareEntityBy
 import com.lehaine.game.component.LDtkLayerComponent
@@ -16,7 +17,7 @@ import com.littlekt.math.Rect
  */
 class RenderLDtkLayerStage(
     private val viewBounds: Rect,
-    vararg extraTypes: ComponentType<*> = emptyArray()
+    vararg extraTypes: UniqueId<*> = emptyArray()
 ) : RenderIteratingStage(
     family { all(LDtkLayerComponent, *extraTypes) },
     comparator = compareEntityBy(LDtkLayerComponent)
