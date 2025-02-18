@@ -1,6 +1,8 @@
 package com.lehaine.game.system.render.pipeline
 
+import com.lehaine.game.Config
 import com.lehaine.game.system.render.RenderPipeline
+import com.lehaine.littlekt.extras.graphics.PixelSmoothRenderTarget
 import com.lehaine.littlekt.extras.shader.CrtShader
 import com.littlekt.Context
 import com.littlekt.graphics.g2d.Batch
@@ -14,12 +16,15 @@ import com.littlekt.util.viewport.ScreenViewport
  */
 class RenderCrtPipeline(context: Context) : RenderPipeline(context, emptyList(), "Render Crt Pipeline") {
 
+    private var scaler = PixelSmoothRenderTarget(context.graphics.width, context.graphics.height, Config.TARGET_HEIGHT)
     private val viewport = ScreenViewport(context.graphics.width, context.graphics.height)
     private val crtShader =
         CrtShader(context.graphics.device, context.graphics.preferredFormat, 4, vignette = 1f, scanlineAlpha = 0.3f)
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
+        scaler = PixelSmoothRenderTarget(width, height, Config.TARGET_HEIGHT)
+        crtShader.scanlineSize = scaler.upscale
         crtShader.updateScanlineProperties(width.toFloat(), height.toFloat())
         viewport.update(width, height, true)
     }
