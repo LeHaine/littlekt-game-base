@@ -4,7 +4,7 @@ import com.littlekt.createLittleKtApp
 import com.littlekt.graphics.Color
 import com.littlekt.graphics.HdpiMode
 
-fun main() {
+suspend fun main() {
     createLittleKtApp {
         width = 960
         height = 540

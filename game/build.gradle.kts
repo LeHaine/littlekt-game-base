@@ -1,6 +1,6 @@
-import com.littlekt.gradle.texturepacker.littleKt
-import com.littlekt.gradle.texturepacker.packing
-import com.littlekt.gradle.texturepacker.texturePacker
+//import com.littlekt.gradle.texturepacker.littleKt
+//import com.littlekt.gradle.texturepacker.packing
+//import com.littlekt.gradle.texturepacker.texturePacker
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -11,19 +11,19 @@ repositories {
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.littlekt.gradle.texturepacker)
+ //   alias(libs.plugins.littlekt.gradle.texturepacker)
 }
 
-littleKt {
-    texturePacker {
-        inputDir = "../art/export_tiles/"
-        outputDir = "src/commonMain/resources/"
-        outputName = "tiles.atlas"
-        packing {
-            extrude = 2
-        }
-    }
-}
+//littleKt {
+//    texturePacker {
+//        inputDir = "../art/export_tiles/"
+//        outputDir = "src/commonMain/resources/"
+//        outputName = "tiles.atlas"
+//        packing {
+//            extrude = 2
+//        }
+//    }
+//}
 
 group = "com.lehaine.game"
 version = "1.0"
@@ -32,6 +32,9 @@ kotlin {
     tasks.withType<JavaExec> { jvmArgs( "--enable-native-access=ALL-UNNAMED") }
     applyDefaultHierarchyTemplate()
     jvm {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_24
+        }
         compilations {
             val main by getting
 
@@ -67,9 +70,6 @@ kotlin {
                 }
             }
         }
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_22
-        }
         testRuns["test"].executionTask.configure {
             useJUnit()
         }
@@ -89,8 +89,8 @@ kotlin {
             KotlinPlatformType.js
         )
 
-        compilations.all {
-            kotlinOptions.sourceMap = true
+        compilerOptions {
+            sourceMap = true
         }
     }
 
