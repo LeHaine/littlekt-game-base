@@ -27,7 +27,7 @@ class RenderParticlesStage(
                 batch.setBlendState(blendMode)
             }
             particles.fastForEach {
-                if (!it.visible || !it.alive) return@fastForEach
+                if (!it.visible || it.killed) return@fastForEach
 
                 if (viewBounds.intersects(
                         it.x + x,
