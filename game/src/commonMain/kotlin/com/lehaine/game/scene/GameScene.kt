@@ -130,7 +130,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 add(AnimationSystem())
                 add(SpriteRenderBoundsCalculationSystem())
                 add(ParticleSimulatorSystem(particleSimulator))
-                add(FxTriggerSystem(particleSimulator))
+                add(FxTriggerSystem(particleSimulator, eventBus))
             }
 
             run ui@{ add(UpdateSceneGraphSystem(graph)) }
@@ -277,6 +277,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
         if (input.isKeyPressed(Key.SHIFT_LEFT) && input.isKeyJustPressed(Key.R)) {
             world.removeAll()
+            eventBus.send(GameEvent.ResetWorld)
             initLevel()
             return
         }

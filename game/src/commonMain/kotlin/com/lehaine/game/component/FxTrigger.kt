@@ -15,7 +15,7 @@ class FxTrigger(
 
     enum class FxType {
         NONE,
-        BLOOD
+        DUST
     }
 
     override fun type(): ComponentType<FxTrigger> = FxTrigger
