@@ -1,6 +1,10 @@
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
-    //alias(libs.plugins.littlekt.gradle.texturepacker) apply false
+    alias(libs.plugins.littlekt.gradle.texturepacker) apply false
 }
 
 allprojects {
@@ -12,8 +16,6 @@ allprojects {
     }
 }
 
-plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
-    the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
-        yarnLockMismatchReport = org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport.WARNING
-    }
+plugins.withType<YarnPlugin> {
+    the<YarnRootExtension>().apply { yarnLockMismatchReport = YarnLockMismatchReport.WARNING }
 }

@@ -28,7 +28,11 @@ class RenderSceneGraphPipeline(
     ): TextureSlice {
         batch.useDefaultShader()
         nextRenderTargetSlice?.let { batch.draw(it, 0f, 0f) }
-        stages.fastForEach { it.render(batch, commandEncoder, renderTargetPassDescriptor) }
+        stages.fastForEach { stage ->
+            when (stage) {
+                is RenderStage.BatchStage -> stage.render(batch, commandEncoder, renderTargetPassDescriptor)
+            }
+        }
         graph.render(commandEncoder, renderTargetPassDescriptor)
 
         return renderTargetSlice

@@ -4,14 +4,13 @@ import com.github.quillraven.fleks.Entity
 import com.github.quillraven.fleks.World
 import com.github.quillraven.fleks.configureWorld
 import com.lehaine.game.*
+import com.lehaine.game.component.FxTrigger
 import com.lehaine.game.component.LDtkLayerComponent
 import com.lehaine.game.component.RenderLayer
 import com.lehaine.game.entity.*
 import com.lehaine.game.event.GameEvent
-import com.lehaine.game.system.GridCameraUpdaterSystem
-import com.lehaine.game.system.ParticleSimulatorSystem
-import com.lehaine.game.system.RenderSystem
-import com.lehaine.game.system.UpdateSceneGraphSystem
+import com.lehaine.game.system.*
+import com.lehaine.game.system.render.RenderGroupStage
 import com.lehaine.game.system.render.RenderPipeline
 import com.lehaine.game.system.render.pipeline.RenderCrtPipeline
 import com.lehaine.game.system.render.pipeline.RenderSceneGraphPipeline
@@ -22,6 +21,7 @@ import com.lehaine.littlekt.extras.FixedScene
 import com.lehaine.littlekt.extras.ecs.component.Grid
 import com.lehaine.littlekt.extras.ecs.component.GridCollisionResult.Companion.addGridCollisionResultPools
 import com.lehaine.littlekt.extras.ecs.component.GridEntityCollisionResult.Companion.addGridEntityCollisionResultPools
+import com.lehaine.littlekt.extras.ecs.component.addPool
 import com.lehaine.littlekt.extras.ecs.event.EventBus
 import com.lehaine.littlekt.extras.ecs.system.*
 import com.lehaine.littlekt.extras.graphics.PixelSmoothRenderTarget
@@ -33,13 +33,12 @@ import com.littlekt.graph.sceneGraph
 import com.littlekt.graphics.VAlign
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.graphics.g2d.ParticleSimulator
-import com.littlekt.graphics.g2d.TextureSlice
 import com.littlekt.graphics.g2d.shape.ShapeRenderer
 import com.littlekt.graphics.g2d.tilemap.ldtk.LDtkWorld
+import com.littlekt.graphics.g2d.util.CameraSpriteBuffers
 import com.littlekt.input.InputMapController
 import com.littlekt.input.Key
 import com.littlekt.math.Rect
-import com.littlekt.util.datastructure.Pool
 import com.littlekt.util.datastructure.fastForEach
 import com.littlekt.util.datastructure.forEachReversed
 import com.littlekt.util.seconds
@@ -57,9 +56,12 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
     private val eventBus: EventBus = EventBus()
 
     private val sceneCamera: GridEntityCamera =
-        GridEntityCamera().apply { renderTarget = PixelSmoothRenderTarget(context.graphics.width, context.graphics.height, Config.TARGET_HEIGHT)}
+        GridEntityCamera().apply {
+            renderTarget =
+                PixelSmoothRenderTarget(context.graphics.width, context.graphics.height, Config.TARGET_HEIGHT)
+        }
     private val sceneCameraViewBounds: Rect = Rect()
-
+    private val cameraBuffers = CameraSpriteBuffers(context.graphics.device)
     private var pipelines: MutableList<RenderPipeline> = mutableListOf()
 
     private val controller =
@@ -106,6 +108,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         injectables {
             addGridCollisionResultPools()
             addGridEntityCollisionResultPools()
+            addPool(FxTrigger) { FxTrigger() }
         }
 
         systems {
@@ -127,6 +130,7 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
                 add(AnimationSystem())
                 add(SpriteRenderBoundsCalculationSystem())
                 add(ParticleSimulatorSystem(particleSimulator))
+                add(FxTriggerSystem(particleSimulator))
             }
 
             run ui@{ add(UpdateSceneGraphSystem(graph)) }
@@ -147,10 +151,9 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
             }
         }
     }
-    val fx: Fx = Fx(world, particleSimulator)
 
     val mapLoader: LDtkMapLoader by
-        Assets.provider.load<LDtkMapLoader>(context.resourcesVfs["world.ldtk"])
+    Assets.provider.load<LDtkMapLoader>(context.resourcesVfs["world.ldtk"])
     val map: LDtkWorld by Assets.provider.prepare { mapLoader.loadMap(false) }
     val level: Level by Assets.provider.prepare { Level(map.levels[0]) }
 
@@ -180,33 +183,41 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         val pipelines = mutableListOf<RenderPipeline>()
         pipelines +=
             RenderSceneToRenderTargetPipeline(
-                context,
+                context = context,
+                cameraBuffers = cameraBuffers,
                 sceneViewport = ScreenViewport(context.graphics.width, context.graphics.height, camera = sceneCamera),
                 sceneCameraViewBounds = sceneCameraViewBounds,
                 stages =
                     listOf(
                         // background
-                        RenderLDtkLayerStage(
-                            sceneCameraViewBounds,
-                            RenderLayer.BACKGROUND,
-                        ),
-                        RenderParticlesStage(
-                            sceneCameraViewBounds,
-                            RenderLayer.BACKGROUND,
+                        RenderGroupStage(
+                            listOf(
+                                RenderLDtkLayerStage(context, cameraBuffers, RenderLayer.BACKGROUND),
+                                RenderParticlesStage(
+                                    sceneCameraViewBounds,
+                                    RenderLayer.BACKGROUND,
+                                ),
+                            )
                         ),
 
                         // main
-                        RenderLDtkLayerStage(sceneCameraViewBounds, RenderLayer.MAIN),
-                        RenderSpritesStage(sceneCameraViewBounds),
+                        RenderGroupStage(
+                            listOf(
+                                RenderLDtkLayerStage(context, cameraBuffers, RenderLayer.MAIN),
+                                RenderSpritesStage(sceneCameraViewBounds)
+                            )
+                        ),
 
                         // foreground
-                        RenderParticlesStage(
-                            sceneCameraViewBounds,
-                            RenderLayer.FOREGROUND,
-                        ),
-                        RenderLDtkLayerStage(
-                            sceneCameraViewBounds,
-                            RenderLayer.FOREGROUND,
+                        RenderGroupStage(
+                            listOf(
+                                RenderParticlesStage(
+                                    sceneCameraViewBounds,
+                                    RenderLayer.FOREGROUND,
+                                ),
+                                RenderLDtkLayerStage(context, cameraBuffers, RenderLayer.FOREGROUND),
+
+                                )
                         ),
 
                         // debug
@@ -222,7 +233,6 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
             )
 
         pipelines += RenderSceneGraphPipeline(context, graph)
-
         pipelines += RenderCrtPipeline(context)
 
         return pipelines
@@ -253,7 +263,8 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
 
     override fun Context.resize(width: Int, height: Int) {
         graph.resize(width, height, true)
-        sceneCamera.renderTarget = PixelSmoothRenderTarget(context.graphics.width, context.graphics.height, Config.TARGET_HEIGHT)
+        sceneCamera.renderTarget =
+            PixelSmoothRenderTarget(context.graphics.width, context.graphics.height, Config.TARGET_HEIGHT)
         pipelines.fastForEach { it.resize(width, height) }
     }
 
@@ -277,5 +288,6 @@ class GameScene(context: Context, val batch: Batch, val shapeRenderer: ShapeRend
         graph.release()
         world.removeAll()
         mapLoader.release()
+        pipelines.forEach { it.release() }
     }
 }

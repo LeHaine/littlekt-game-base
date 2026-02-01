@@ -5,7 +5,7 @@ import com.github.quillraven.fleks.EntityComponentContext
 import com.github.quillraven.fleks.World.Companion.family
 import com.lehaine.game.component.DebugRenderBounds
 import com.lehaine.game.event.GameEvent
-import com.lehaine.game.system.render.RenderIteratingStage
+import com.lehaine.game.system.render.RenderIteratingBatchStage
 import com.lehaine.littlekt.extras.ecs.component.RenderBounds
 import com.lehaine.littlekt.extras.ecs.event.EventBus
 import com.littlekt.graphics.g2d.Batch
@@ -23,7 +23,7 @@ class DebugRenderBoundsStage(
     private val viewBounds: Rect,
     eventBus: EventBus
 ) :
-    RenderIteratingStage(
+    RenderIteratingBatchStage(
         family = family { all(DebugRenderBounds, RenderBounds) }
     ) {
 

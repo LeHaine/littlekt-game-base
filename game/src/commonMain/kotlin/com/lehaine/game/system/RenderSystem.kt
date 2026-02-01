@@ -66,9 +66,7 @@ class RenderSystem(
         var nextRenderTargetSlice: TextureSlice? = null
 
         batch.use {
-            pipelines.fastForEach {
-                nextRenderTargetSlice = it.render(batch, commandEncoder, nextRenderTargetSlice)
-            }
+            pipelines.fastForEach { nextRenderTargetSlice = it.render(batch, commandEncoder, nextRenderTargetSlice) }
             nextRenderTargetSlice?.let { nextRenderTargetSlice ->
                 viewport.update(context.graphics.width, context.graphics.height, true)
 
@@ -97,7 +95,6 @@ class RenderSystem(
     override fun onDispose() {
         pipelines.fastForEach { it.release() }
     }
-
     companion object {
         private val logger = Logger<RenderSystem>()
     }

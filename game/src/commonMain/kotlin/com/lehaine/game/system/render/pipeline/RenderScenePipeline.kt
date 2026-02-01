@@ -8,7 +8,6 @@ import com.littlekt.Context
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.graphics.g2d.TextureSlice
 import com.littlekt.graphics.webgpu.CommandEncoder
-import com.littlekt.graphics.webgpu.RenderPassDescriptor
 import com.littlekt.util.datastructure.fastForEach
 import com.littlekt.util.viewport.ScreenViewport
 
@@ -45,7 +44,12 @@ class RenderScenePipeline(
             nextRenderTargetSlice.texture.height.toFloat(),
             sceneCamera.renderTarget?.upscale?.toFloat() ?: 1f
         )
-        pixelSmoothShader.updateSampleProperties(sceneCamera.subpixelX, sceneCamera.subpixelY, sceneCamera.scaledDistX, sceneCamera.scaledDistY)
+        pixelSmoothShader.updateSampleProperties(
+            sceneCamera.subpixelX,
+            sceneCamera.subpixelY,
+            sceneCamera.scaledDistX,
+            sceneCamera.scaledDistY
+        )
         batch.draw(
             nextRenderTargetSlice,
             0f,
@@ -53,10 +57,12 @@ class RenderScenePipeline(
             width = context.graphics.width.toFloat(),
             height = context.graphics.height.toFloat(),
         )
-        stages.fastForEach { it.render(batch, commandEncoder, renderTargetPassDescriptor) }
-        batch.flush(
-            sceneRenderPass
-        )
+        stages.fastForEach { stage ->
+            when (stage) {
+                is RenderStage.BatchStage -> stage.render(batch, commandEncoder, renderTargetPassDescriptor)
+            }
+        }
+        batch.flush(sceneRenderPass)
         sceneRenderPass.end()
         sceneRenderPass.release()
         return renderTargetSlice

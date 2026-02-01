@@ -7,7 +7,10 @@ import com.lehaine.littlekt.extras.graphics.PixelSmoothRenderTarget
 import com.littlekt.Context
 import com.littlekt.graphics.Color
 import com.littlekt.graphics.g2d.Batch
+import com.littlekt.graphics.g2d.SpriteBatch
 import com.littlekt.graphics.g2d.TextureSlice
+import com.littlekt.graphics.g2d.use
+import com.littlekt.graphics.util.CameraBuffersViaMatrix
 import com.littlekt.graphics.webgpu.*
 import com.littlekt.math.Rect
 import com.littlekt.util.calculateViewBounds
@@ -21,10 +24,20 @@ import com.littlekt.util.viewport.Viewport
  */
 class RenderSceneToRenderTargetPipeline(
     context: Context,
+    cameraBuffers: CameraBuffersViaMatrix,
     sceneViewport: ScreenViewport,
     private val sceneCameraViewBounds: Rect,
     stages: List<RenderStage>,
 ) : RenderPipeline(context, stages, "Render Scene to Render Target Pipeline") {
+
+    private val device = context.graphics.device
+
+    private val envBatch = SpriteBatch(
+        device,
+        context.graphics,
+        context.graphics.preferredFormat,
+        cameraBuffers = cameraBuffers
+    )
     private val sceneViewport: Viewport = sceneViewport
     private var sceneRenderTarget: PixelSmoothRenderTarget =
         PixelSmoothRenderTarget(
@@ -76,17 +89,49 @@ class RenderSceneToRenderTargetPipeline(
         commandEncoder: CommandEncoder,
         nextRenderTargetSlice: TextureSlice?
     ): TextureSlice {
-        batch.useDefaultShader()
-        sceneViewport.apply()
-        sceneCameraViewBounds.calculateViewBounds(sceneViewport.camera)
-        val renderTargetRenderPass = commandEncoder.beginRenderPass(renderTargetPassDescriptor)
-        batch.viewProjection = sceneViewport.camera.viewProjection
-        nextRenderTargetSlice?.let { batch.draw(it, 0f, 0f) }
-        stages.fastForEach { it.render(batch, commandEncoder, renderTargetPassDescriptor) }
-        batch.flush(renderTargetRenderPass)
+        envBatch.use {
+            sceneViewport.apply()
+            sceneCameraViewBounds.calculateViewBounds(sceneViewport.camera)
+            val renderTargetRenderPass = commandEncoder.beginRenderPass(renderTargetPassDescriptor)
+            envBatch.viewProjection = sceneViewport.camera.viewProjection
+            nextRenderTargetSlice?.let { envBatch.draw(it, 0f, 0f) }
+            stages.fastForEach { stage ->
+                when (stage) {
+                    is RenderStage.GroupedStage -> {
+                        stage.stages.fastForEach { stage ->
+                            when (stage) {
+                                is RenderStage.BatchStage -> stage.render(
+                                    envBatch,
+                                    commandEncoder,
+                                    renderTargetPassDescriptor
+                                )
 
-        renderTargetRenderPass.end()
-        renderTargetRenderPass.release()
+                                is RenderStage.CacheStage -> stage.render(
+                                    renderTargetRenderPass,
+                                    sceneViewport.camera.viewProjection
+                                )
+                            }
+                        }
+                        envBatch.flush(renderTargetRenderPass)
+                    }
+
+                    is RenderStage.BatchStage -> stage.render(envBatch, commandEncoder, renderTargetPassDescriptor)
+                    is RenderStage.CacheStage -> stage.render(
+                        renderTargetRenderPass,
+                        sceneViewport.camera.viewProjection
+                    )
+                }
+            }
+            envBatch.flush(renderTargetRenderPass)
+
+            renderTargetRenderPass.end()
+            renderTargetRenderPass.release()
+        }
         return renderTargetSlice
+    }
+
+    override fun release() {
+        super.release()
+        envBatch.release()
     }
 }

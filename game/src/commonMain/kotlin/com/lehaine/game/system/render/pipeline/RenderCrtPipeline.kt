@@ -2,12 +2,14 @@ package com.lehaine.game.system.render.pipeline
 
 import com.lehaine.game.Config
 import com.lehaine.game.system.render.RenderPipeline
+import com.lehaine.game.system.render.RenderStage
 import com.lehaine.littlekt.extras.graphics.PixelSmoothRenderTarget
 import com.lehaine.littlekt.extras.shader.CrtShader
 import com.littlekt.Context
 import com.littlekt.graphics.g2d.Batch
 import com.littlekt.graphics.g2d.TextureSlice
 import com.littlekt.graphics.webgpu.CommandEncoder
+import com.littlekt.util.datastructure.fastForEach
 import com.littlekt.util.viewport.ScreenViewport
 
 /**
@@ -40,14 +42,13 @@ class RenderCrtPipeline(context: Context) : RenderPipeline(context, emptyList(),
         val sceneRenderPass = commandEncoder.beginRenderPass(renderTargetPassDescriptor)
         sceneRenderPass.setViewport(viewport.x, viewport.y, viewport.width, viewport.height)
         batch.viewProjection = viewport.camera.viewProjection
-        batch.draw(
-            nextRenderTargetSlice,
-            0f,
-            0f,
-        )
-        batch.flush(
-            sceneRenderPass
-        )
+        batch.draw(nextRenderTargetSlice, 0f, 0f)
+        stages.fastForEach { stage ->
+            when (stage) {
+                is RenderStage.BatchStage -> stage.render(batch, commandEncoder, renderTargetPassDescriptor)
+            }
+        }
+        batch.flush(sceneRenderPass)
         sceneRenderPass.end()
         sceneRenderPass.release()
         return renderTargetSlice

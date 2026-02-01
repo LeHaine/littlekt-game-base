@@ -6,7 +6,7 @@ import com.github.quillraven.fleks.World.Companion.family
 import com.github.quillraven.fleks.collection.compareEntity
 import com.lehaine.game.component.DebugSprite
 import com.lehaine.game.event.GameEvent
-import com.lehaine.game.system.render.RenderIteratingStage
+import com.lehaine.game.system.render.RenderIteratingBatchStage
 import com.lehaine.littlekt.extras.ecs.component.Grid
 import com.lehaine.littlekt.extras.ecs.component.RenderBounds
 import com.lehaine.littlekt.extras.ecs.component.Sprite
@@ -23,7 +23,7 @@ import com.littlekt.math.Rect
 class DebugRenderSpritesStage(
     private val viewBounds: Rect,
     eventBus: EventBus
-) : RenderIteratingStage(family = family {
+) : RenderIteratingBatchStage(family = family {
     all(Grid, Sprite, DebugSprite)
 }, comparator = compareEntity { entA, entB -> entA[Grid].bottom.compareTo(entB[Grid].bottom) }) {
 
